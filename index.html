@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>yanzi. — Yanzi Guo 郭彦孜</title>
+  <script>(function(){var l="en";try{var q=new URLSearchParams(location.search).get("lang"),s=localStorage.getItem("lang");if(q==="zh"||q==="en")l=q;else if(s==="zh"||s==="en")l=s;else if(/^zh/i.test(navigator.language||""))l="zh";}catch(e){}document.documentElement.dataset.lang=l;document.documentElement.lang=l==="zh"?"zh-Hans":"en";})();</script>
+  <!-- TEMP: Google-hosted for the prototype; self-host before launch (China). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Serif:wght@300;400&display=swap">
+  <link rel="stylesheet" href="shared/base.css?v=2">
+    <link rel="stylesheet" href="home.css?v=54">
+</head>
+<body>
+
+  <!-- Homepage — E2 has no box intro (Yanzi, 2026-10-17); the page opens straight on the archive. -->
+  <div class="home refined" id="home">
+    <!-- E1: logo centred in the nav, links left and right (source: images/logo/yanzi-bold.svg); no title band -->
+    <header class="h-nav">
+      <div class="h-nav-l">
+        <a href="#" class="is-current"><span class="en">Work</span><span class="zh">作品</span></a>
+        <a href="#"><span class="en">About</span><span class="zh">关于</span></a>
+      </div>
+      <a class="h-brand" href="./" aria-label="yanzi. — home">
+      <svg class="h-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1004 384" aria-hidden="true">
+        <defs>
+          <clipPath id="lg-y"><rect y="84" width="300" height="300"/></clipPath>
+          <clipPath id="lg-an"><rect x="186" y="-20" width="500" height="316"/></clipPath>
+        </defs>
+        <g fill="none" stroke="currentColor">
+          <g clip-path="url(#lg-y)" stroke-width="36"><path d="M58,63l77,214"/><path d="M215.4,60l-86.4,240c-8,22-26,41-57,41h-25"/></g>
+          <path clip-path="url(#lg-an)" stroke-width="34" d="M219,320l72.4-201.2c6.61-18.28,26.8-27.740,45.08-21.12,9.83,3.56,17.57,11.3,21.12,21.12l42.2,117.2c11.3,29.7,29.3,43,49.5,43s33.2-13.3,33.2-43v-56c0-58,24-84.5,61-84.5s61,26.5,61,84.5v140"/>
+          <circle stroke-width="26" cx="324.5" cy="230" r="53"/>
+        </g>
+        <g fill="currentColor" stroke="currentColor" stroke-width="5">
+          <path d="M665,95v29h111.8c-37.27,46-74.53,92-111.8,138v29h150v-29h-111.8c37.27-46,74.53-92,111.8-138v-29h-150Z"/>
+          <rect x="870" y="95" width="34" height="196"/><rect x="869" y="18" width="36" height="39"/><rect x="975" y="265" width="26" height="26"/>
+        </g>
+      </svg>
+      </a>
+      <div class="h-nav-r">
+        <a href="#" class="h-play"><span class="en">Playground</span><span class="zh">实验</span></a>
+        <div class="lang-switch h-lang"><button data-set-lang="en">EN</button> / <button data-set-lang="zh">中文</button></div>
+      </div>
+    </header>
+
+
+    <!-- E2 archive (after experiment.obys.agency): many grey images turning slowly by themselves;
+         the one under the mouse turns to colour and shows its name; click opens the project.
+         Drag or scroll to spin faster. -->
+    <section class="h-reel" id="reel" aria-label="Projects">
+      <div class="h-track" id="track"></div>
+      <div class="h-tip" id="tip" aria-hidden="true"></div>
+      <div class="h-cursor" id="cursor" aria-hidden="true"></div>
+    </section>
+
+    <!-- E1: contact line slides sideways, EN + 中文 together (like yimao.design). Hover pauses it. -->
+    <footer class="h-foot">
+      <div class="h-marquee">
+        <div class="h-mq-track">
+          <span class="h-mq-set"><span class="h-mq-item">For design inquiries or collaborations, email me <a href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>.</span><span class="h-mq-item">如需设计咨询或项目合作，欢迎邮件联系 <a href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>。</span><span class="h-mq-item">For design inquiries or collaborations, email me <a href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>.</span><span class="h-mq-item">如需设计咨询或项目合作，欢迎邮件联系 <a href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>。</span></span>
+          <span class="h-mq-set" aria-hidden="true"><span class="h-mq-item">For design inquiries or collaborations, email me <a tabindex="-1" href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>.</span><span class="h-mq-item">如需设计咨询或项目合作，欢迎邮件联系 <a tabindex="-1" href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>。</span><span class="h-mq-item">For design inquiries or collaborations, email me <a tabindex="-1" href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>.</span><span class="h-mq-item">如需设计咨询或项目合作，欢迎邮件联系 <a tabindex="-1" href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>。</span></span>
+        </div>
+      </div>
+      <span class="h-tools">
+      </span>
+    </footer>
+
+  </div>
+
+  <!-- E2: click an image → this panel slides in (outside the 3D archive, so fixed position + blur work) over the right half (blurred scene behind,
+       like experiment.obys.agency). A "bookstore" card: cover, name / year, category,
+       short summary, the project's other images; "Open project" goes to the full page. -->
+  <aside class="pv" id="pv" aria-hidden="true" aria-labelledby="pv-name">
+    <canvas class="pv-blur" id="pv-blur" aria-hidden="true"></canvas>
+    <button class="pv-x" id="pv-x" type="button" aria-label="Close"></button>
+    <div class="pv-book">
+      <p class="pv-top"><span class="pv-num" id="pv-num"></span><span class="pv-cat" id="pv-cat"></span><span class="pv-yr" id="pv-yr"></span></p>
+      <div class="pv-mid">
+        <button class="pv-cover" id="pv-cover" type="button" aria-label="Next image"></button>
+        <div class="pv-dots" id="pv-dots"></div>
+        <a class="pv-title" id="pv-title" href="#"><span class="pv-name" id="pv-name"></span></a>
+        <p class="pv-sum" id="pv-sum"></p>
+      </div>
+      <p class="pv-foot"><a class="pv-open" id="pv-open" href="#"><span class="pv-open-t"><span class="en">view details</span><span class="zh">查看详情</span></span><span class="pv-arrow" aria-hidden="true">→</span></a></p>
+    </div>
+  </aside>
+  <script src="shared/lang.js?v=3"></script>
+  <script src="projects.js?v=16"></script>
+  <script src="home.js?v=50"></script>
+</body>
+</html>

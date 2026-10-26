@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project — yanzi.</title>
+  <script>(function(){var l="en";try{var q=new URLSearchParams(location.search).get("lang"),s=localStorage.getItem("lang");if(q==="zh"||q==="en")l=q;else if(s==="zh"||s==="en")l=s;else if(/^zh/i.test(navigator.language||""))l="zh";}catch(e){}document.documentElement.dataset.lang=l;document.documentElement.lang=l==="zh"?"zh-Hans":"en";})();</script>
+  <!-- TEMP: Google-hosted for the prototype; self-host before launch (China). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="shared/base.css?v=2">
+  <link rel="stylesheet" href="project.css?v=3">
+</head>
+<body>
+  <!-- Project page, structure after basedesign.com/projects/… :
+       title + grey tagline · tag pills · hero · summary + More info · images ·
+       credits · next + related -->
+
+  <header class="bar">
+    <a class="bar-brand" href="index.html" aria-label="yanzi. — home">
+      <svg class="bar-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1004 384" aria-hidden="true">
+        <defs>
+          <clipPath id="lg-y"><rect y="84" width="300" height="300"/></clipPath>
+          <clipPath id="lg-an"><rect x="186" y="-20" width="500" height="316"/></clipPath>
+        </defs>
+        <g fill="none" stroke="currentColor">
+          <g clip-path="url(#lg-y)" stroke-width="36"><path d="M58,63l77,214"/><path d="M215.4,60l-86.4,240c-8,22-26,41-57,41h-25"/></g>
+          <path clip-path="url(#lg-an)" stroke-width="34" d="M219,320l72.4-201.2c6.61-18.28,26.8-27.740,45.08-21.12,9.83,3.56,17.57,11.3,21.12,21.12l42.2,117.2c11.3,29.7,29.3,43,49.5,43s33.2-13.3,33.2-43v-56c0-58,24-84.5,61-84.5s61,26.5,61,84.5v140"/>
+          <circle stroke-width="26" cx="324.5" cy="230" r="53"/>
+        </g>
+        <g fill="currentColor" stroke="currentColor" stroke-width="5">
+          <path d="M665,95v29h111.8c-37.27,46-74.53,92-111.8,138v29h150v-29h-111.8c37.27-46,74.53-92,111.8-138v-29h-150Z"/>
+          <rect x="870" y="95" width="34" height="196"/><rect x="869" y="18" width="36" height="39"/><rect x="975" y="265" width="26" height="26"/>
+        </g>
+      </svg>
+    </a>
+    <nav class="bar-nav">
+      <a class="pill" href="index.html"><span class="en">Work</span><span class="zh">作品</span></a>
+      <a class="pill" href="#"><span class="en">About</span><span class="zh">关于</span></a>
+    </nav>
+    <div class="bar-right">
+      <div class="lang-switch"><button data-set-lang="en">EN</button> / <button data-set-lang="zh">中文</button></div>
+      <a class="pill pill-back" href="index.html">← <span class="en">Archive</span><span class="zh">作品档案</span></a>
+    </div>
+  </header>
+
+  <main class="pj" id="pj">
+    <section class="pj-head">
+      <p class="pj-count" id="pj-count"></p>
+      <h1 class="pj-title"><span id="pj-name"></span><span class="pj-tagline" id="pj-tagline"></span></h1>
+      <ul class="pj-tags" id="pj-tags"></ul>
+    </section>
+
+    <div class="pj-hero" id="pj-hero"></div>
+
+    <section class="pj-intro">
+      <p class="pj-summary" id="pj-summary"></p>
+    </section>
+
+    <!-- Brief: context / challenge / solution (always visible) -->
+    <section class="pj-sec pj-brief">
+      <h2 class="pj-sec-h"><span class="en">Brief</span><span class="zh">项目简介</span></h2>
+      <div class="pj-brief-cols" id="pj-brief"></div>
+    </section>
+
+    <!-- Process: numbered steps, each with text + image slots -->
+    <section class="pj-sec pj-process">
+      <h2 class="pj-sec-h"><span class="en">Process</span><span class="zh">设计过程</span></h2>
+      <ol class="pj-steps" id="pj-process"></ol>
+    </section>
+
+    <!-- Outcome: final images / videos -->
+    <section class="pj-sec pj-outcome">
+      <h2 class="pj-sec-h"><span class="en">Outcome</span><span class="zh">最终成果</span></h2>
+      <div class="pj-gallery" id="pj-gallery"></div>
+    </section>
+
+    <section class="pj-credits">
+      <h2><span class="en">Credits</span><span class="zh">项目信息</span></h2>
+      <dl id="pj-credits"></dl>
+    </section>
+
+    <section class="pj-more-work">
+      <div class="pj-next">
+        <p class="pj-k"><span class="en">Next</span><span class="zh">下一个</span></p>
+        <a class="pj-card pj-card-big" id="pj-next"></a>
+      </div>
+      <div class="pj-related">
+        <p class="pj-k"><span class="en">Related</span><span class="zh">相关项目</span></p>
+        <div id="pj-related"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ft">
+    <span>© <span data-year></span> Yanzi Guo 郭彦孜</span>
+    <a href="mailto:yanziguo0806@gmail.com">yanziguo0806@gmail.com</a>
+  </footer>
+
+  <script src="shared/lang.js?v=3"></script>
+  <script src="projects.js?v=16"></script>
+  <script src="project.js?v=4"></script>
+</body>
+</html>

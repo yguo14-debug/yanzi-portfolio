@@ -1,0 +1,448 @@
+/* Frame E — homepage, built from Yanzi's Figma "Desktop - 3" (1440 × 1024).
+   Measured from the Figma prototype; values scale with the window width. */
+
+.home {
+  --g: #fff;             /* page background — E1: white (was grey #ededed) */
+  --cream: #f2eedf;      /* title + footer band */
+  --ink: #000;
+  --sans: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Noto Sans SC", sans-serif;
+  --serif: "Noto Serif", Georgia, "Songti SC", serif;   /* TODO confirm the Figma serif */
+  --mono: "Space Mono", ui-monospace, Menlo, "PingFang SC", monospace;
+
+  height: 100vh; height: 100dvh;
+  display: grid;
+  grid-template-rows: 59px 130px 1fr auto;   /* nav · title band · projects · footer */
+  background: var(--g); color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+}
+
+/* ---------- Top nav (Work · About · Index … Playground · EN / 中文) ---------- */
+.h-nav {
+  position: relative;
+  border-bottom: 1px solid var(--ink);
+  font: 500 20px/1 var(--sans);
+}
+.h-nav > * { position: absolute; top: 50%; transform: translateY(-50%); }
+/* Figma x-positions at 1440: 27 · 216 · 403 · 1112 · 1307 */
+.h-nav > :nth-child(1) { left: 1.9vw; }
+.h-nav > :nth-child(2) { left: 15vw; }
+.h-nav > :nth-child(3) { left: 28vw; }
+.h-nav > .h-play       { left: 77.2vw; }
+.h-nav > .h-lang       { left: 90.8vw; white-space: nowrap; }
+.h-nav a { text-decoration: none; }
+.h-nav a:hover { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+.h-lang button { font: inherit; }
+
+/* ---------- Title band ---------- */
+.h-title {
+  display: grid; place-items: center;
+  border-bottom: 1px solid var(--ink);
+}
+.h-title h1 {
+  margin: 0;
+  padding: 4px 38px 6px;
+  background: var(--cream);
+  font: 300 clamp(40px, 4.7vw, 68px)/1.1 var(--serif);
+  letter-spacing: -.005em;
+}
+
+/* ---------- Project reel ---------- */
+.h-reel {
+  position: relative; overflow: hidden;
+  display: grid; align-items: center;
+  cursor: grab; touch-action: pan-y;
+  user-select: none;
+}
+.h-reel.dragging { cursor: grabbing; }
+.h-track { display: flex; gap: 0; width: max-content; will-change: transform; }
+
+.card {
+  flex: 0 0 auto; width: 19.1vw;            /* card + gap = 275px at 1440 */
+  display: grid; justify-items: center; gap: 14px;
+  text-decoration: none; color: inherit;
+}
+.card-img {
+  width: 11.4vw; aspect-ratio: 164 / 212;    /* 164 × 212 at 1440 */
+  border-radius: 11px; background: #000; overflow: hidden;
+  transition: transform .5s cubic-bezier(.2,.7,.2,1);
+}
+.card-img > * { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-name { font: 500 20px/1.2 var(--sans); white-space: nowrap; }
+.card:hover .card-img { transform: translateY(-8px) scale(1.04); }
+
+/* ---------- Footer band ---------- */
+.h-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 41px;
+  padding: 0 1.9vw;
+  height: 33px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--ink);
+  font: 400 12px/1 var(--mono);
+}
+.h-foot p { margin: 0; }
+.h-foot a { text-decoration: underline; text-underline-offset: 3px; }
+.replay { font: 400 11px/1 var(--mono); color: #666; }
+.replay:hover { color: var(--ink); text-decoration: underline; }
+
+/* ---------- Archive ring (obys "Ring" direction) ----------
+   Cards in a row; the selected one is larger and in colour, the rest grey and
+   turned slightly toward the centre. Its name appears large below. */
+.h-reel {
+  perspective: 1500px; perspective-origin: 50% 40%;
+  display: grid; grid-template-rows: 1fr auto; align-items: center; justify-items: center;
+  cursor: none;
+}
+.h-track.ring { position: relative; width: 0; height: 0; transform-style: preserve-3d; align-self: center; }
+.h-track.ring .card {
+  position: absolute; left: 0; top: 0;
+  width: 8.5vw; margin-left: -4.25vw; margin-top: -5.3vw;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.h-track.ring .card-img {
+  display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 0;
+  background: #000;
+  filter: grayscale(1);
+  transition: filter .5s, opacity .5s, box-shadow .5s;
+}
+.h-track.ring .card.is-active .card-img { filter: none; box-shadow: 0 0 0 10px #bdbdbd; }
+.h-track.ring .card-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }  /* name shows large below instead */
+
+.h-now { padding-bottom: 14px; text-align: center; }
+.h-now h2 { min-height: 1em; }
+/* view switch, like obys: Line, Carousel, Stack, Unpack */
+.h-modes { margin-top: 10px; font: 400 17px/1 var(--sans); cursor: auto; }
+.h-modes button { font: inherit; padding: 2px 0; }
+.h-modes button[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+.h-modes button:hover { opacity: .6; }
+.h-now h2 {
+  margin: 0; overflow: hidden;
+  font: 500 clamp(48px, 7.6vw, 116px)/1 var(--sans); letter-spacing: -.045em;
+  white-space: nowrap;
+}
+.h-now .ch { display: inline-block; transform: translateY(105%); animation: rise .6s cubic-bezier(.2,.8,.2,1) forwards; }
+.h-now .ch.sp { width: .28em; }
+@keyframes rise { to { transform: none; } }
+
+/* black dot cursor (desktop with a mouse only) */
+.h-cursor {
+  position: fixed; left: 0; top: 0; z-index: 45; pointer-events: none;
+  width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%;
+  background: #000; opacity: 0; transition: opacity .2s, width .25s, height .25s, margin .25s;
+}
+.h-reel:hover .h-cursor { opacity: 1; }
+.h-cursor.big { width: 22px; height: 22px; margin: -11px 0 0 -11px; }
+@media (hover: none) { .h-reel { cursor: auto; } .h-cursor { display: none; } }
+
+/* ---------- Narrow windows ---------- */
+@media (max-width: 900px) {
+  .h-nav { font-size: 15px; }
+  .h-nav > .h-play { left: auto; right: 110px; }
+  .h-nav > .h-lang { left: auto; right: 16px; }
+  .h-nav > :nth-child(2) { left: 22vw; }
+  .h-nav > :nth-child(3) { left: 42vw; }
+  .card { width: 44vw; }
+  .card-img { width: 30vw; }
+  .h-track.ring .card { width: 24vw; margin-left: -12vw; margin-top: -15vw; }
+  .card-name { font-size: 15px; }
+  .h-foot { margin-bottom: 20px; font-size: 10px; }
+  .replay { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-img { transition: none; }
+}
+
+/* =====================================================================
+   Original (Yanzi's Figma) extras
+   ===================================================================== */
+.h-meta { display: none; }
+.h-tools { display: flex; gap: 22px; align-items: center; }
+.style-switch { font: 400 11px/1 var(--mono); color: #666; }
+.style-switch button { font: inherit; color: inherit; }
+.style-switch button[aria-pressed="true"] { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+/* =====================================================================
+   Refined — typographic hierarchy pass (compare with ?style=refined)
+   One grotesk for everything + Space Mono for small labels.
+   Scale: 12 (labels) · 14 (nav, views) · 40 (brand) · 64–120 (project name).
+   ===================================================================== */
+.home.refined {
+  --m: 24px;
+  grid-template-rows: 52px 136px 1fr auto;   /* E1: taller band for the logo */
+}
+/* nav: small, regular, on the 24px margin */
+.home.refined .h-nav { font: 400 14px/1 var(--sans); }
+.home.refined .h-nav > :nth-child(1) { left: var(--m); }
+.home.refined .h-nav > :nth-child(2) { left: calc(var(--m) + 72px); }
+.home.refined .h-nav > :nth-child(3) { left: calc(var(--m) + 148px); }
+.home.refined .h-nav > .h-play { left: auto; right: calc(var(--m) + 100px); }
+.home.refined .h-nav > .h-lang { left: auto; right: var(--m); }
+
+/* brand: second level — same grotesk, no highlight box */
+.home.refined .h-title h1 {
+  background: none; padding: 0;
+  font: 500 40px/1 var(--sans); letter-spacing: -.03em;
+}
+
+/* project name: the one big thing; year + number move to a mono label */
+.home.refined .h-now { padding-bottom: 20px; }
+.home.refined .h-meta {
+  display: block; margin: 0 0 10px;
+  font: 400 12px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: #555;
+}
+.home.refined .h-now h2 { font: 500 clamp(64px, 8.3vw, 120px)/.95 var(--sans); letter-spacing: -.045em; }
+.home.refined .h-now .yr { display: none; }
+.home.refined .h-modes { margin-top: 16px; font: 400 14px/1 var(--sans); }
+.home.refined .h-modes button { color: #777; }
+.home.refined .h-modes button[aria-pressed="true"] { color: var(--ink); }
+
+/* footer: one background colour — no cream band, a hairline instead */
+.home.refined .h-foot {
+  background: none; border-bottom: 0; border-top: 1px solid var(--ink);
+  height: 40px; margin-bottom: 0; padding: 0 var(--m);
+  font: 400 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .03em;
+}
+
+/* ---------- Easy-to-click view switch ----------
+   Name + switch sit above the 3D cards, show the normal pointer, and each
+   option has a generous click area. */
+.h-now { position: relative; z-index: 3000; cursor: auto; }
+.h-modes button { padding: 8px 6px; margin: -8px -2px; cursor: pointer; }
+.h-modes .comma { pointer-events: none; }
+.h-cursor.off { opacity: 0 !important; }
+
+/* leaving for a project page: quick fade */
+body.leaving .home { opacity: 0; transform: scale(.985); transition: opacity .35s, transform .35s; }
+
+/* big name: give the last letter and descenders room so the clip (used for the
+   letter-rise animation) never cuts them off — e.g. the final "e" of Rebirth.exe */
+.h-now h2 { padding: 0 .12em .08em; margin-left: -.12em; margin-right: -.12em; }
+
+/* view switch: keep the comma tight to the word; the bigger click area is vertical only */
+.h-modes button { padding: 8px 0; margin: -8px 0; }
+
+
+/* E1 nav (after blokdesign.com): the logo is a centred mark at a readable size (its joined
+   a–n needs ≥ ~40px); the links sit left and right at one size, on the logo's baseline.
+   3-column grid: links · logo · links. */
+.home.refined { --nav-fs: 20px; --logo-h: 64px; grid-template-rows: 96px 1fr auto; }   /* E2: bigger centred logo, taller nav */
+.home.refined .h-nav {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;
+  padding: 14px var(--m) 0;
+  font: 500 var(--nav-fs)/1 var(--sans); letter-spacing: -.01em;
+}
+.home.refined .h-nav > * { position: static; transform: none; left: auto; right: auto; }
+.h-nav-l, .h-nav-r { display: flex; align-items: baseline; gap: 28px; }
+.h-nav-r { justify-content: flex-end; }
+.home.refined .h-nav > .h-brand { line-height: 0; grid-column: 2; }
+.h-logo { display: block; width: auto; color: var(--ink); height: var(--logo-h);
+  margin-bottom: calc(var(--logo-h) * -90.5 / 384); }   /* descender hangs below the shared baseline */
+.home.refined .h-nav a:not(.h-brand) .en { text-transform: lowercase; }
+.home.refined .h-nav a:hover { text-decoration: none; opacity: .5; }
+.home.refined .h-nav a.is-current .en,
+.home.refined .h-nav a.is-current .zh { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+@media (max-width: 700px) {
+  .home.refined { --nav-fs: 15px; --logo-h: 42px; grid-template-rows: 68px 1fr auto; }
+  .home.refined .h-nav { padding-top: 10px; }
+  .h-nav-l, .h-nav-r { gap: 12px; }
+}
+
+/* language switch: same size as the links. "en" lowercase like work/about; 中文 is
+   scaled down because CJK glyphs fill the whole em box and look much larger than x-height text. */
+.home.refined .h-lang, .home.refined .h-lang button { font: inherit; letter-spacing: inherit; }
+.home.refined .h-lang button[data-set-lang="en"] { text-transform: lowercase; }
+.home.refined .h-lang button[data-set-lang="zh"] { font-size: .8em; }
+
+
+/* E1: view switch = a row of small layout icons (a tool, clearly not a page link).
+   No pill, no mono label: grey icons, the active one black, its name beside the row. */
+.home.refined .h-modes { display: inline-flex; align-items: center; gap: 14px; margin-top: 18px; }
+.h-modes-set { display: inline-flex; gap: 2px; }
+.home.refined .h-modes button,
+.h-modes button {
+  display: grid; place-items: center; width: 32px; height: 32px; margin: 0; padding: 0;
+  color: #a3a3a3; text-decoration: none; transition: color .2s;
+}
+.h-modes button svg { width: 18px; height: 18px; }
+.h-modes button:hover { opacity: 1; color: var(--ink); }
+.home.refined .h-modes button[aria-pressed="true"],
+.h-modes button[aria-pressed="true"] { color: var(--ink); text-decoration: none; }
+.h-modes-now { min-width: 4.5em; text-align: left; font: 500 14px/1 var(--sans); text-transform: lowercase; }
+.h-modes .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.home.refined .h-modes::before { content: ""; width: 4.5em; }   /* balances the name so the icons stay centred */
+
+/* E1: hairlines back (nav bottom, footer top) — they frame the archive like a box. */
+.home.refined .h-nav { border-bottom: 1px solid var(--ink); }
+.home.refined .h-foot { border-top: 1px solid var(--ink); }
+
+/* E1: sliding contact line (after yimao.design): two identical sets scroll left forever. */
+.home.refined .h-foot {
+  position: relative; display: block; height: 44px; padding: 0;
+  font: 400 14px/44px var(--sans); text-transform: none; letter-spacing: 0;
+  overflow: hidden;
+}
+.h-marquee { overflow: hidden; white-space: nowrap; }
+.h-mq-track { display: inline-flex; animation: h-mq 60s linear infinite; }
+.h-marquee:hover .h-mq-track { animation-play-state: paused; }
+.h-mq-set { display: inline-flex; flex: none; }
+.h-mq-item { padding-right: 2.5em; }
+.home.refined .h-foot a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+@keyframes h-mq { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .h-mq-track { animation: none; } }
+
+/* prototype tools: float bottom-right, out of the marquee */
+.home.refined .h-tools { position: fixed; right: var(--m); bottom: 56px; z-index: 3001; }
+@media (max-width: 700px) { .home.refined .h-foot { font-size: 12px; } }
+
+/* =====================================================================
+   E2 archive — after experiment.obys.agency
+   ===================================================================== */
+.home.refined .h-reel { perspective: 1500px; perspective-origin: 50% 50%; position: relative; overflow: visible; }
+.h-track.cloud { position: relative; width: 0; height: 0; transform-style: preserve-3d; align-self: center; --w: 8.5vw; }
+.h-track.cloud .img {
+  position: absolute; left: 0; top: 0; display: block;
+  /* same area for every shape: wide frames get wider, tall frames taller (--sq = √ratio) */
+  width: calc(var(--w) * var(--sq, 1)); height: calc(var(--w) / var(--sq, 1));
+  margin-left: calc(var(--w) * var(--sq, 1) / -2); margin-top: calc(var(--w) / var(--sq, 1) / -2);
+  background: hsl(var(--hue) 70% calc(var(--tone) - 26%));   /* placeholder colour until real images */
+  filter: grayscale(1) contrast(.75) brightness(1.3);          /* light grey at rest */
+  transition: filter .35s ease;
+  transform-style: preserve-3d; will-change: transform; overflow: hidden;
+}
+.h-track.cloud .img > * { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.h-track.cloud .img.kin { filter: grayscale(.6) contrast(.85) brightness(1.15); }
+.h-track.cloud .img.hot { filter: none; }
+.h-reel[data-mode="stack"] .img { backface-visibility: hidden; }
+
+/* view switch: one quiet line of text, bottom centre (like obys "Ring, Flower, Sphere, Cylinder") */
+.home.refined .h-now {
+  position: absolute; left: 0; right: 0; bottom: 18px; padding: 0; text-align: center;
+  pointer-events: none; z-index: 3000;
+}
+.home.refined .h-now .h-modes { pointer-events: auto; display: inline-block; margin: 0; font: 500 14px/1 var(--sans); }
+.home.refined .h-modes button { display: inline; width: auto; height: auto; padding: 8px 0; margin: -8px 0; color: var(--ink); font: inherit; text-transform: lowercase; }
+.home.refined .h-modes button[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.home.refined .h-modes button:hover { opacity: .5; }
+.home.refined .h-modes .comma { color: var(--ink); }
+
+/* name by the cursor while an image is in colour */
+.h-tip {
+  position: fixed; left: 0; top: 0; z-index: 4000; pointer-events: none;
+  font: 500 14px/1 var(--sans); white-space: nowrap; color: var(--ink);
+  opacity: 0; transition: opacity .2s;
+}
+.h-tip.on { opacity: 1; }
+.h-tip .tip-n, .h-tip .tip-y { color: #888; }
+.h-nav { position: relative; z-index: 3500; }
+@media (max-width: 900px) { .h-track.cloud { --w: 20vw; } }
+
+/* ---------- E2 preview panel — right half, blurred scene behind (obys Experiment) ---------- */
+.h-track.cloud { transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+.h-reel.is-previewing .h-track.cloud { transform: translateX(-3vw); }   /* only a nudge left: images keep drifting behind the panel, seen blurred through it */
+.pv {
+  /* the panel lives outside .home, so it needs the page's colour + type tokens itself */
+  --ink: #000; --sans: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Noto Sans SC", sans-serif;
+  color: var(--ink); font-family: var(--sans);
+  position: fixed; top: 0; right: 0; bottom: 0; width: 40vw; min-width: 420px; z-index: 3600;   /* two fifths of the screen (6:4 with the archive); covers the nav (playground, en/中文) and footer on that side */
+  /* frosted glass (obys Experiment): the drifting images show through as soft grey shapes */
+  background: rgba(242, 242, 242, .82);
+  -webkit-backdrop-filter: blur(30px); backdrop-filter: blur(30px);
+  isolation: isolate;
+  display: grid; place-items: center; padding: 96px 3.2vw 72px 4.5vw;
+  transform: translateX(100%); transition: transform .7s cubic-bezier(.2,.8,.2,1);
+  cursor: auto;
+}
+.pv[aria-hidden="false"] { transform: none; }
+.pv-x {
+  position: absolute; left: 14px; top: 50%; width: 28px; height: 28px; margin-top: -14px;
+}
+.pv-x::before, .pv-x::after { content: ""; position: absolute; left: 3px; right: 3px; top: 50%; height: 1.5px; background: var(--ink); }
+.pv-x::before { transform: rotate(45deg); } .pv-x::after { transform: rotate(-45deg); }
+.pv-x:hover { opacity: .5; }
+/* the panel reads like a book: top line = category (on the nav line), cover + title + summary
+   in the middle, "view details" on the footer line. One sans, three sizes. */
+.pv { display: block; padding: 0; }
+.pv-book {
+  height: 100%; display: grid; grid-template-rows: 96px 1fr 44px; padding: 0 56px 0 64px;   /* top row = nav height */
+}
+/* Hierarchy in three levels:
+   1  cover + title (40px, black)        — what it is
+   2  summary (16px, dark grey)          — why it matters
+   3  label line + dots + action (13–15px) — where you are / what to do next */
+.pv-top {
+  margin: 0 -56px 0 -64px; padding: 0 56px 0 64px;   /* line runs the full panel width, like the bottom row */
+  align-self: stretch; display: flex; align-items: flex-start; gap: 14px;
+  /* sits on the same baseline as work · about · playground (63px from the top) */
+  padding-top: 51.9px;
+  border-bottom: 1px solid var(--ink);
+  font: 400 13px/1 var(--sans);
+}
+.pv-num { color: var(--ink); font-weight: 500; }
+.pv-cat { color: #777; text-transform: lowercase; }
+.pv-yr { margin-left: auto; color: #777; }
+.pv-mid { align-self: center; padding: 28px 0; }
+.pv-cover {
+  display: block; padding: 0; cursor: e-resize;
+  height: min(56vh, calc((40vw - 120px) / var(--ar))); max-width: 100%; aspect-ratio: var(--ar);   /* the image's own shape: portrait stays portrait */
+  background: hsl(var(--hue) 70% calc(var(--tone) - 26%)); overflow: hidden;
+  box-shadow: 0 40px 80px -30px rgba(0,0,0,.35);
+}
+.pv-cover > * { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.pv-dots { display: flex; gap: 6px; margin: 14px 0 28px; min-height: 6px; }
+.pv-dots:has(.pv-dot:only-child) { visibility: hidden; }   /* one image → no dots */
+.pv-dot { width: 6px; height: 6px; padding: 0; border-radius: 50%; background: #a3a3a3; }
+.pv-dot.on { background: var(--ink); }
+.pv-title { display: block; margin-top: 4px; text-decoration: none; }
+.pv-name { font: 500 40px/1 var(--sans); letter-spacing: -.025em; }
+.pv-title:hover .pv-name { text-decoration: underline; text-underline-offset: 7px; text-decoration-thickness: 2px; }
+.pv-sum { margin: 16px 0 0; max-width: 30em; font: 400 16px/1.45 var(--sans); color: #444;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.pv-foot { margin: 0 -56px 0 -64px; display: flex; border-top: 1px solid var(--ink); }
+.pv-open {
+  position: relative; flex: 1; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 56px 0 64px; overflow: hidden; isolation: isolate;
+  font: 500 15px/1 var(--sans); text-decoration: none; color: var(--ink);
+  transition: color .35s cubic-bezier(.2,.8,.2,1);
+}
+.pv-open::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink);
+  transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.2,.8,.2,1);
+}
+.pv-arrow { font-size: 18px; transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+.pv-open:hover, .pv-open:focus-visible { color: #fff; }
+.pv-open:hover::before, .pv-open:focus-visible::before { transform: scaleX(1); }
+.pv-open:hover .pv-arrow, .pv-open:focus-visible .pv-arrow { transform: translateX(6px); }
+@media (prefers-reduced-motion: reduce) { .pv-open, .pv-open::before, .pv-arrow { transition: none; } }
+@media (max-width: 900px) {
+  .pv { width: 100vw; }
+  .pv-book { padding: 0 24px; }
+  .pv-foot, .pv-top { margin: 0 -24px; } .pv-open, .pv-top { padding: 0 24px; }
+  .pv-cover { height: min(40vh, calc((100vw - 48px) / var(--ar))); }
+  .pv-x { left: auto; right: 20px; top: 76px; margin: 0; }
+  .pv-book { grid-template-rows: 68px 1fr 44px; }
+  .pv-top { padding-top: 31.6px; }
+  .h-reel.is-previewing .h-track.cloud { transform: none; }
+}
+
+/* E2: no intro (style.css not loaded) — the page itself is white */
+html, body { margin: 0; height: 100%; }
+body { background: #fff; color: var(--ink); overflow: hidden; }
+/* prototype frame switcher: top-centre, above everything (was in the intro's style.css) */
+.frame-tag { top: auto; bottom: 60px; left: auto; right: 16px; transform: none; z-index: 5000; }
+.style-switch { display: none; }   /* E2 has one style only */
+.frame-tag a { text-decoration: none; }
+
+/* frosted grain on the panel glass (fine noise, very light) */
+.pv::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .22; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* a soft light from the top so the glass has depth */
+.pv::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0) 40%, rgba(255,255,255,0) 70%, rgba(255,255,255,.25));
+}
+.pv-blur { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; }
