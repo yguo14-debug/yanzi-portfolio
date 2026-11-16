@@ -250,7 +250,7 @@ window.PROJECTS = [
   },
   {
     id: "rite-aid",
-    line: { en: "Retail Branding + Packaging Design", zh: "零售品牌 + 包装设计" },   // homepage card: a short line under the name, shown on hover (after basedesign.com; draft — Yanzi to confirm)
+    line: { en: "Reimagining Rite Aid as a modern wellness destination, opening up endless possibilities for everyday well-being.", zh: "将 Rite Aid 重塑为现代健康目的地，为日常的身心健康开启无限可能。" },   // homepage card: a short line under the name, shown on hover (after basedesign.com; draft — Yanzi to confirm)
     en: "Rite Aid", zh: "Rite Aid",
     tagline: { en: "[Tagline placeholder]", zh: "【标语占位】" },
     summary: { en: "[Placeholder] One sentence that says what this project is and who it is for.", zh: "【占位】一句话说明这个项目是什么、为谁而做。" },
