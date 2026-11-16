@@ -250,6 +250,7 @@ window.PROJECTS = [
   },
   {
     id: "rite-aid",
+    locked: true,   // Yanzi 2026-11-16: not ready yet — the case study asks for a password (homepage card stays)
     line: { en: "Reimagining Rite Aid as a modern wellness destination, opening up endless possibilities for everyday well-being.", zh: "将 Rite Aid 重塑为现代健康目的地，为日常的身心健康开启无限可能。" },   // homepage card: a short line under the name, shown on hover (after basedesign.com; draft — Yanzi to confirm)
     en: "Rite Aid", zh: "Rite Aid",
     tagline: { en: "[Tagline placeholder]", zh: "【标语占位】" },
@@ -343,6 +344,7 @@ window.PROJECTS = [
   },
   {
     id: "maarten-baas",
+    locked: true,   // Yanzi 2026-11-16: not ready yet — the case study asks for a password (homepage card stays)
     line: { en: "It's About Time, an exhibition on Maarten Baas", zh: "设计师 Maarten Baas 的展览「It's About Time」" },   // homepage card: a short line under the name, shown on hover (after basedesign.com; draft — Yanzi to confirm)
     en: "Maarten Baas", zh: "Maarten Baas",
     tagline: { en: "It's About Time", zh: "It's About Time" },
@@ -365,6 +367,7 @@ window.PROJECTS = [
   },  {
     // Yanzi 2026-11-13: Sentire takes Tinkylife's place (Tinkylife kept below, not shown)
     id: "sentire",
+    locked: true,   // Yanzi 2026-11-16: not ready yet — the case study asks for a password (homepage card stays)
     line: { en: "A typeface for the cycle of soul-work", zh: "一款写给「灵魂工作循环」的字体" },   // homepage card: a short line under the name, shown on hover (after basedesign.com; draft — Yanzi to confirm)
     en: "Sentire", zh: "Sentire",
     tagline: { en: "The Cycle of Soul-work", zh: "灵魂工作的循环" },

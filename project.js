@@ -189,10 +189,46 @@ function pairUp(g) {
 // back to the archive without replaying the box intro
 document.querySelectorAll('a[href="index.html"]').forEach((a) => { a.href = "index.html?from=project"; });
 
-renderMedia();
-render();
-lazyVideos();
-document.addEventListener("langchange", () => { render(); lazyVideos(); });
+// Yanzi 2026-11-16: projects that aren't ready ask for a password first. A soft lock only — this is a
+// static site, so it keeps the work out of view, it is not real security. The password is stored as its
+// SHA-256 hash; once entered it is remembered for this browser tab.
+const LOCK = "8ef5e66bd470171abf446959be0ab6c7d6902b220df564fecd1ae4df5bd6c9e4";
+const KEY = "pj-open-" + P[i].id;
+const isOpen = () => { try { return sessionStorage.getItem(KEY) === "1"; } catch (e) { return false; } };
+const sha = async (t) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))].map((b) => b.toString(16).padStart(2, "0")).join("");
+function start() {
+  renderMedia();
+  render();
+  lazyVideos();
+  document.addEventListener("langchange", () => { render(); lazyVideos(); });
+}
+function lock() {
+  const p = P[i];
+  document.title = `${p.en} — yanzi.`;
+  $("pj").classList.add("pj-locked");
+  const box = document.createElement("section");
+  box.className = "pj-lock";
+  box.innerHTML = `<h1 class="pj-lock-name">${p.en}</h1>
+    <p class="pj-lock-msg"><span class="en">This project is not public yet. Enter the password to view it.</span><span class="zh">这个项目暂未公开，请输入密码查看。</span></p>
+    <form class="pj-lock-form" autocomplete="off">
+      <input type="password" name="pw" aria-label="Password" autofocus>
+      <button type="submit"><span class="en">Enter</span><span class="zh">进入</span></button>
+    </form>
+    <p class="pj-lock-err" hidden><span class="en">Wrong password — please try again.</span><span class="zh">密码不正确，请再试一次。</span></p>
+    <p class="pj-lock-ask"><span class="en">Need access? <a href="mailto:yanziguo0806@gmail.com">Ask me</a> for the password.</span><span class="zh">需要查看？<a href="mailto:yanziguo0806@gmail.com">联系我</a>获取密码。</span></p>`;
+  $("pj").prepend(box);
+  box.querySelector("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pw = e.target.pw.value.trim();
+    if (pw && (await sha(pw)) === LOCK) {
+      try { sessionStorage.setItem(KEY, "1"); } catch (er) {}
+      box.remove(); $("pj").classList.remove("pj-locked"); start();
+    } else {
+      box.querySelector(".pj-lock-err").hidden = false; e.target.pw.select();
+    }
+  });
+}
+if (P[i].locked && !isOpen()) lock(); else start();
 })();
 
 // E5 (Yanzi): line the facts column up with "contact" in the bar

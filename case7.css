@@ -124,3 +124,19 @@ html:not(.is-embed) #pj-hero.pj7-hero > * { animation: pj7-settle 1.4s cubic-bez
 
 .pj7-full-link { color: #000; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .pj7-full-link:hover { opacity: .55; }
+
+/* Yanzi 2026-11-16: locked case study (not ready yet) — only the password box shows */
+.pj-locked > :not(.pj-lock) { display: none !important; }
+.pj-lock { min-height: calc(100svh - 97px - 45px); display: flex; flex-direction: column; justify-content: center;
+  padding: 48px 12px; max-width: 560px; }
+.pj-lock-name { margin: 0 0 20px; font: 500 clamp(48px, 7vw, 96px)/.95 var(--sans); letter-spacing: -.03em; }
+.pj-lock-msg { margin: 0 0 20px; font: 400 17px/1.4 var(--sans); }
+.pj-lock-form { display: flex; gap: 8px; }
+.pj-lock-form input { flex: 1; min-width: 0; height: 40px; padding: 0 12px; border: 1px solid #000; border-radius: 4px;
+  font: 400 16px var(--sans); background: #fff; color: #000; outline: none; }
+.pj-lock-form input:focus { box-shadow: 0 0 0 1px #000; }
+.pj-lock-form button { height: 40px; padding: 0 18px; border: 1px solid #000; border-radius: 4px; background: #000; color: #fff;
+  font: 400 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .04em; cursor: pointer; }
+.pj-lock-err { margin: 12px 0 0; font: 400 13px/1.3 var(--sans); color: #c00; }
+.pj-lock-ask { margin: 24px 0 0; font: 400 13px/1.3 var(--sans); color: #8a8a8a; }
+.pj-lock-ask a { color: #000; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
