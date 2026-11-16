@@ -250,6 +250,8 @@ window.PROJECTS = [
   },
   {
     id: "rite-aid",
+    // Yanzi 2026-11-15: instead of Client / Special thanks. Link = the images on this page until she sends the full-project URL
+    factsNote: { k: { en: "Retail Branding + Packaging", zh: "零售品牌 + 包装" }, link: { href: "#pj-gallery", en: "View full project", zh: "查看完整项目" } },
     line: { en: "A fresh face for an American pharmacy", zh: "为美国连锁药房换一张新面孔" },   // homepage card: a short line under the name, shown on hover (after basedesign.com; draft — Yanzi to confirm)
     en: "Rite Aid", zh: "Rite Aid",
     tagline: { en: "[Tagline placeholder]", zh: "【标语占位】" },

@@ -121,3 +121,6 @@ html:not(.is-embed) #pj-hero.pj7-hero > * { animation: pj7-settle 1.4s cubic-bez
 @media (max-width: 700px) { .pj4 #pj-gallery > .pj-row:has(img[src*="fermologie-net-bag"]) { margin-left: 0; } }
 .pj4 #pj-gallery > .pj-row:has(img[src*="stay-in-lign-3"]) { margin-left: calc((100% - var(--m)) / 4 + var(--m)); }
 @media (max-width: 700px) { .pj4 #pj-gallery > .pj-row:has(img[src*="stay-in-lign-3"]) { margin-left: 0; } }
+
+.pj7-full-link { color: #000; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.pj7-full-link:hover { opacity: .55; }

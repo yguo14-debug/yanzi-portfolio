@@ -50,6 +50,10 @@ function render() {
   $("pj-tagline").textContent = /placeholder|占位/i.test(tl) ? "" : tl;
   $("pj-tags").innerHTML = (p.tags || []).map((t) => `<li class="pill">${t[l]}</li>`).join("");
   const f = p.facts || {};
+  // E7 (Yanzi): a project can show a short note + a link in place of Client / Special thanks
+  if (p.factsNote) {
+    $("pj-facts").innerHTML = `<div class="pj4-b"><h3 class="pj4-k">${p.factsNote.k[l]}</h3>${p.factsNote.link ? `<p class="pj4-v"><a class="pj7-full-link" href="${p.factsNote.link.href}"${/^https?:/.test(p.factsNote.link.href) ? ' target="_blank" rel="noopener"' : ""}>${p.factsNote.link[l]}</a></p>` : ""}</div>`;
+  } else
   $("pj-facts").innerHTML = [
     [l === "zh" ? "客户" : "Client", (f.client && f.client[l]) || "—"],
     [l === "zh" ? "特别感谢" : "Special thanks", (f.thanks && f.thanks[l]) || "—"],
