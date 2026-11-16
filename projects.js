@@ -255,10 +255,9 @@ window.PROJECTS = [
     tagline: { en: "[Tagline placeholder]", zh: "【标语占位】" },
     summary: { en: "[Placeholder] One sentence that says what this project is and who it is for.", zh: "【占位】一句话说明这个项目是什么、为谁而做。" },
     year: "2025",   // [placeholder — confirm with Yanzi]
-    type: { en: "Identity Design / Logo Animation / Packaging Design", zh: "识别设计 / 标志动画 / 包装设计" },
-    tags: [
-      { en: "Identity Design", zh: "识别设计" },
-      { en: "Logo Animation", zh: "标志动画" },
+    type: { en: "Retail Branding / Packaging Design", zh: "零售品牌 / 包装设计" },
+    tags: [   // Yanzi 2026-11-15
+      { en: "Retail Branding", zh: "零售品牌" },
       { en: "Packaging Design", zh: "包装设计" },
     ],
     // TEMP: streamed from Framer — copy locally before launch
