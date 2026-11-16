@@ -134,7 +134,7 @@
 /* Yanzi 2026-11-13, after basedesign.com: a short line under each project's name, in the same small size,
    black, plain — it appears when the project is hovered (its line is kept, so nothing moves); always shown on touch */
 .wg-line { margin: 0; padding: 4px 12px 0; font: 400 13px/1.3 var(--sans); color: #000;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity .3s ease; }
+  hyphens: none; opacity: 0; transition: opacity .3s ease; }   /* Yanzi 2026-11-15: long lines wrap (was one line + …) */
 @media (hover: hover) { a.wg-col:hover .wg-line { opacity: 1; } }
 @media (hover: none) { .wg-line { opacity: 1; } }
 

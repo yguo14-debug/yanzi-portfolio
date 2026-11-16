@@ -140,7 +140,7 @@ window.PROJECTS = [
     // E7 (Yanzi 2026-11-08): new project in Maarten Baas's old place; Maarten moved down to the end.
     // Source files: content/fermologie/ (the jars photo; the cleaned restaurant animation, not used for now)
     id: "fermologie",
-    line: { en: "A restaurant brand identity connecting food, culture, and wellness through fermentation.", zh: "一套以发酵连接食物、文化与健康的餐厅品牌识别。" },   // homepage card: a short line under the name, shown on hover (after basedesign.com; draft — Yanzi to confirm)
+    line: { en: "A restaurant brand identity linking food, culture, and wellness through fermentation.", zh: "一套以发酵连接食物、文化与健康的餐厅品牌识别。" },   // homepage card: a short line under the name, shown on hover (after basedesign.com; draft — Yanzi to confirm)
     en: "Fermologie", zh: "Fermologie",
     tagline: { en: "", zh: "" },
     summary: { en: "Fermologie is a fermentation-focused dining concept pairing daytime workshops with nighttime omakase. Through curated pairings, hands-on experiences, and artisanal products, guests discover fermentation through flavor, culture, and creativity.", zh: "Fermologie 是一个以发酵为核心的餐饮概念，白天是工作坊，夜晚是 omakase。通过精心策划的搭配、亲手参与的体验和手作产品，品牌邀请客人从风味、文化与创造力中认识发酵。" },   // Yanzi's copy 2026-11-14
