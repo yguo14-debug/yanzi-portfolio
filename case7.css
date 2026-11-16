@@ -1,0 +1,123 @@
+/* E7 — case study after plus-ex.com/experience (Yanzi 2026-11-08):
+   one big photo first (full width, rounded, a strip of the page showing under it), then the content;
+   text fades in section by section as it scrolls into view. */
+
+/* hero: inset 10px from the top, the page's 24px from the sides, rounded like theirs */
+#pj-hero.pj7-hero {
+  aspect-ratio: auto !important;
+  height: calc(100svh - 97px - 10px - 84px); min-height: 360px;
+  margin: 10px 0 0; border-radius: 16px; overflow: hidden; background: #eee;
+}
+#pj-hero.pj7-hero > img, #pj-hero.pj7-hero > video {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+}
+/* opened on its own (not slid up from the homepage): the photo settles in once */
+html:not(.is-embed) #pj-hero.pj7-hero > * { animation: pj7-settle 1.4s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes pj7-settle { from { transform: scale(1.06); } }
+
+/* inside the slide-up view: no site bar (the homepage's is behind it), so the photo gets the room */
+.is-embed .bar { display: none; }
+.is-embed #pj-hero.pj7-hero { height: calc(100svh - 10px - 84px); }
+
+/* text fades in when it reaches the screen (opacity only, 0.6s — their timing) */
+.pj7-fade { opacity: 0; transition: opacity .6s cubic-bezier(.45, 0, .55, 1); }
+.pj7-fade.in { opacity: 1; }
+
+@media (max-width: 700px) {
+  #pj-hero.pj7-hero { height: 62svh; min-height: 0; border-radius: 10px; }
+  .is-embed #pj-hero.pj7-hero { height: 70svh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not(.is-embed) #pj-hero.pj7-hero > * { animation: none; }
+  .pj7-fade { opacity: 1; transition: none; }
+}
+
+/* Yanzi: the photo fills the screen edge to edge, square corners like every other image */
+#pj-hero.pj7-hero {
+  margin: 0 calc(var(--m) * -1); border-radius: 0; max-width: none; width: auto;
+  height: calc(100svh - 97px); min-height: 360px;
+}
+.is-embed #pj-hero.pj7-hero { height: 100svh; }
+@media (max-width: 700px) {
+  #pj-hero.pj7-hero { height: calc(100svh - 69px); border-radius: 0; }
+  .is-embed #pj-hero.pj7-hero { height: 100svh; }
+}
+
+/* Yanzi: Next + the two Related projects = three equal cards on one line (same width, same
+   image shape, titles on one level); "Next" over the first, "Related" over the other two */
+.pj4 .pj-more-work { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.pj-more-work .pj-related { grid-column: span 2; }
+.pj-more-work .pj-related #pj-related { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.pj-more-work .pj-card .img { aspect-ratio: 4 / 3; }
+.pj-more-work .pj-card .t, .pj-more-work .pj-related .t { font: 500 20px/1.15 var(--sans); letter-spacing: -.01em; text-transform: none; }
+.pj-more-work .pj-card .s, .pj-more-work .pj-related .s { font-size: 13px; }
+@media (max-width: 700px) {
+  .pj4 .pj-more-work { grid-template-columns: 1fr; gap: 40px; }
+  .pj-more-work .pj-related { grid-column: auto; }
+}
+
+/* Yanzi 2026-11-14: an image under Context / Challenge / Solution, filling the text column down to the
+   bottom of the image beside it (so the two columns end on one line) */
+.pj4-intro > .pj4-info:has(.pj7-asidefig) { display: flex; flex-direction: column; align-self: stretch; }
+.pj7-asidefig { flex: 1 1 auto; min-height: 220px; margin: 40px 0 0; overflow: hidden; background: #111; }
+.pj7-asidefig > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 78% 45%; }
+@media (max-width: 700px) { .pj7-asidefig { flex: none; aspect-ratio: 16 / 10; margin-top: 28px; } }
+
+/* Yanzi 2026-11-14 (after dommaroon.info/nmm), projects with layout "rail": text in the ¼ column stays in view
+   while its group of images scrolls by in the ¾ column — the text never breaks the run of images */
+.pj4 #pj-gallery > .pj7-group {
+  grid-column: 1 / -1; display: grid; align-items: start;
+  grid-template-columns: calc((100% - var(--m)) / 4) minmax(0, 1fr); column-gap: var(--m);
+}
+.pj7-group > aside { position: sticky; top: 130px; }
+.pj7-imgs { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.pj7-imgs > figure { margin: 0; width: 100% !important; }
+@media (max-width: 700px) {
+  .pj4 #pj-gallery > .pj7-group { grid-template-columns: 1fr; row-gap: 20px; }
+  .pj7-group > aside { position: static; }
+}
+
+/* Yanzi: each text belongs to its own image — it slides down with that image only, and stops at its bottom;
+   images without text stay in the same right column */
+.pj4 #pj-gallery > .pj7-right { grid-column: 1 / -1; margin-left: calc((100% - var(--m)) / 4 + var(--m)); }
+@media (max-width: 700px) { .pj4 #pj-gallery > .pj7-right { margin-left: 0; } }
+
+/* Yanzi 2026-11-14: a Process block led by one large film (the space walkthrough), with the stills
+   smaller underneath: three renders in a row, then the axonometric and the SketchUp studies */
+.pj4-step-media.pj7-feature { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
+.pj7-feature > figure { margin: 0; aspect-ratio: auto; background: none; grid-column: span 3; }
+.pj7-feature > figure:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 9; background: #000; }
+.pj7-feature > figure:nth-child(2), .pj7-feature > figure:nth-child(3), .pj7-feature > figure:nth-child(4) { grid-column: span 2; }
+.pj7-feature > figure > img, .pj7-feature > figure > video { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 700px) { .pj7-feature > figure, .pj7-feature > figure:nth-child(n) { grid-column: 1 / -1; } }
+
+/* Yanzi 2026-11-14: space photos full screen — edge to edge, one screen high */
+.pj4 #pj-gallery > figure.pj7-full { grid-column: 1 / -1; width: 100vw !important; max-width: none; margin: 0 0 0 calc(50% - 50vw); height: 100svh; min-height: 420px; overflow: hidden; }
+.pj4 #pj-gallery > figure.pj7-full > img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 700px) { .pj4 #pj-gallery > figure.pj7-full { height: auto; min-height: 0; } .pj4 #pj-gallery > figure.pj7-full > img { height: auto; } }
+
+/* Yanzi 2026-11-14: the workshop poster (portrait) at half the ¾ column, so it doesn't run two screens tall */
+.pj4 #pj-gallery > figure:has(img[src*="workshop-poster"]) { max-width: calc(((100% - var(--m)) * 3 / 4 - 16px) / 2); }
+@media (max-width: 700px) { .pj4 #pj-gallery > figure:has(img[src*="workshop-poster"]) { max-width: none; } }
+
+/* Yanzi 2026-11-14: the brand book — spreads side by side on a black band, edge to edge; scroll sideways */
+.pj7-band { width: 100vw; margin: 56px 0 0 calc(50% - 50vw); background: #000; }
+.pj7-band-row { display: flex; gap: 24px; overflow-x: auto; padding: 72px var(--m); scroll-snap-type: x proximity; scrollbar-width: thin; scrollbar-color: #444 #000; }
+.pj7-band-row > figure { flex: 0 0 auto; height: min(52vh, 520px); aspect-ratio: 1425 / 690; margin: 0; scroll-snap-align: start; background: none; }
+.pj7-band-row > figure > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+@media (max-width: 700px) { .pj7-band-row { padding: 40px var(--m); gap: 16px; } .pj7-band-row > figure { height: auto; width: 86vw; } }
+
+/* Yanzi: the book band the same width as the walkthrough above (the ¾ column), not edge to edge;
+   the spreads smaller inside it, side by side */
+.pj7-band { width: auto; margin: 16px 0 0 calc((100% - var(--m)) / 4 + var(--m)); }
+.pj7-band-row { padding: 40px 32px; gap: 20px; }
+.pj7-band-row > figure { height: auto; width: calc((100% - 20px) / 2.15); aspect-ratio: 1425 / 690; }
+@media (max-width: 700px) { .pj7-band { margin-left: 0; } .pj7-band-row { padding: 24px 16px; } .pj7-band-row > figure { width: 80%; } }
+
+/* the workshop poster + Instagram story pair sits in the ¾ column, under the workshop room */
+.pj4 #pj-gallery > .pj-row:has(img[src*="workshop-poster"]) { margin-left: calc((100% - var(--m)) / 4 + var(--m)); }
+@media (max-width: 700px) { .pj4 #pj-gallery > .pj-row:has(img[src*="workshop-poster"]) { margin-left: 0; } }
+.pj4 #pj-gallery > .pj-row:has(img[src*="fermologie-net-bag"]) { margin-left: calc((100% - var(--m)) / 4 + var(--m)); }
+@media (max-width: 700px) { .pj4 #pj-gallery > .pj-row:has(img[src*="fermologie-net-bag"]) { margin-left: 0; } }
+.pj4 #pj-gallery > .pj-row:has(img[src*="stay-in-lign-3"]) { margin-left: calc((100% - var(--m)) / 4 + var(--m)); }
+@media (max-width: 700px) { .pj4 #pj-gallery > .pj-row:has(img[src*="stay-in-lign-3"]) { margin-left: 0; } }

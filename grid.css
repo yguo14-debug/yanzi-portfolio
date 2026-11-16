@@ -1,0 +1,148 @@
+/* E6 — Work homepage: the Playground's sheet, used for the case studies.
+   Same line system as every page: nav bar line, the 48px label row (who + Grid / List), then
+   rows of equal columns on thin lines. Each column: name at the top, type + year just above the
+   image, the image on the row's bottom line. Unlike the Playground, every cover has the same
+   shape (5:4), so the projects read as equals and the tops line up. */
+
+.wg-page { animation: none; }
+
+/* label row = the site's second line */
+.wg-label {
+  display: flex; align-items: center; gap: 14px; height: 48px; padding: 0 var(--m);
+  border-bottom: 1px solid #000; font: 400 13px/1 var(--sans);
+}
+.wg-intro { margin: 0; color: #6b6b6b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wg-intro b { color: #000; font-weight: 500; }
+.wg-view { margin-left: auto; }
+.wg-count { margin-left: auto; color: #8a8a8a; font-variant-numeric: tabular-nums; }
+.wg-view { display: flex; gap: 6px; color: #8a8a8a; }
+.wg-view button { font: inherit; color: #8a8a8a; padding: 0; transition: color .2s; }
+.wg-view button:hover { color: #000; }
+.wg-view button[aria-pressed="true"] { color: #000; font-weight: 500; }
+
+/* ---------- grid ---------- */
+.wg-row { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); border-bottom: 1px solid #000; }
+.wg-col {
+  display: flex; flex-direction: column; min-width: 0;
+  border-right: 1px solid #000; font: 400 13px/1.3 var(--sans); color: #000;
+}
+.wg-row > :last-child { border-right: 0; }
+.wg-row { padding: 0 calc(var(--m) - 12px); }   /* the outer 12px + this = the 24px page margin; columns stay equal */
+.wg-name { margin: 0; padding: 10px 12px 0; font: 500 15px/1.3 var(--sans); letter-spacing: -.005em; }
+.wg-meta { margin: auto 0 0; display: flex; justify-content: space-between; gap: 12px; padding: 28px 12px 8px; }
+.wg-meta span:first-child { color: #8a8a8a; min-width: 0; }
+.wg-meta { align-items: flex-end; }
+.wg-meta span:last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wg-img { position: relative; margin: 0 12px 12px; aspect-ratio: 5 / 4; background: #eee; overflow: hidden; }
+.wg-img > img, .wg-img > video {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover;
+}
+/* the cover video waits under the still and fades in on hover */
+.wg-img > video { opacity: 0; transition: opacity .4s; }
+.wg-col.is-playing .wg-img > video { opacity: 1; }
+
+/* "Coming soon": a grey block, not a link */
+.wg-col.is-empty { color: #8a8a8a; cursor: default; }
+.wg-col.is-empty .wg-name { font-weight: 400; }
+
+/* reveal: the cover rises out of its line when the row comes into view, column after column
+   (same curve as the Playground) */
+.wg-img { clip-path: inset(100% 0 0 0); transition: clip-path 1.1s cubic-bezier(.16, 1, .3, 1); transition-delay: calc(var(--i, 0) * 90ms); }
+.wg-name, .wg-meta { opacity: 0; transform: translateY(8px); transition: opacity .6s, transform .8s cubic-bezier(.16, 1, .3, 1); transition-delay: calc(var(--i, 0) * 90ms + 250ms); }
+.wg-row.in .wg-img { clip-path: inset(0 0 0 0); }
+.wg-row.in .wg-name, .wg-row.in .wg-meta { opacity: 1; transform: none; }
+.wg-img > img { transform: scale(1.08); transition: transform 1.4s cubic-bezier(.16, 1, .3, 1); transition-delay: calc(var(--i, 0) * 90ms); }
+.wg-row.in .wg-img > img { transform: none; }
+
+/* hover: the name underlines and the picture leans in a little — a link, plainly */
+@media (hover: hover) {
+  a.wg-col:hover .wg-name { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .wg-row.in a.wg-col:hover .wg-img > * { transform: scale(1.03); transition: transform .8s cubic-bezier(.16, 1, .3, 1), opacity .4s; transition-delay: 0s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wg-img, .wg-name, .wg-meta, .wg-img > * { clip-path: none; opacity: 1; transform: none; transition: none; }
+  .wg-img > video { display: none; }
+}
+
+/* ---------- list (the second view) ---------- */
+.wg-list { list-style: none; margin: 0; padding: 0; }
+.wg-li a, .wg-li > span {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) 80px 24px; gap: 16px; align-items: baseline;
+  padding: 14px var(--m) 13px; border-bottom: 1px solid #000; font: 400 15px/1.3 var(--sans); color: #000;
+}
+.wg-li .l-name { font-weight: 500; }
+.wg-li .l-type { color: #8a8a8a; }
+.wg-li .l-y { font-variant-numeric: tabular-nums; }
+.wg-li .l-go { text-align: right; opacity: 0; transition: opacity .2s; }
+.wg-li.is-empty > span, .wg-li.is-empty .l-name { color: #b4b4b4; font-weight: 400; }
+@media (hover: hover) {
+  .wg-li a:hover { background: #000; color: #fff; }
+  .wg-li a:hover .l-type { color: #bdbdbd; }
+  .wg-li a:hover .l-go { opacity: 1; }
+}
+/* a small cover follows the cursor in the list */
+.wg-peek {
+  position: fixed; left: 0; top: 0; z-index: 40; margin: 0; width: 220px; aspect-ratio: 5 / 4;
+  background: #eee; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity .2s;
+}
+.wg-peek.on { opacity: 1; }
+.wg-peek > * { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (hover: none) { .wg-peek { display: none; } }
+
+@media (max-width: 760px) {
+  .wg-li a, .wg-li > span { grid-template-columns: minmax(0, 1fr) 56px; }
+  .wg-li .l-type, .wg-li .l-go { display: none; }
+  .wg-intro { font-size: 12px; }
+}
+@media (max-width: 520px) { .wg-count { display: none; } }
+.frame-tag[hidden] { display: none; }   /* review switcher only with ?frames=1 */
+/* short views (List) still push the contact strip to the bottom of the screen */
+.wg { min-height: calc(100svh - 97px - 45px); }
+@media (max-width: 700px) { .wg { min-height: calc(100svh - 69px - 45px); } }
+
+/* Yanzi (2026-11-02): two per row, uneven — 3.5/6 + 2.5/6, the wide side swapping every row.
+   Same 5:4 covers, so the narrow one is shorter: bottoms sit on the row line, tops step. */
+.wg-row.is-wide { grid-template-columns: 7fr 5fr; }
+.wg-row.is-flip { grid-template-columns: 5fr 7fr; }
+.wg-name { font-size: 17px; }
+/* the narrow cover is square, so it stands nearly as tall as the wide one — a small step at the
+   top instead of an empty white gap */
+.wg-row.is-wide > :nth-child(2) .wg-img, .wg-row.is-flip > :first-child .wg-img { aspect-ratio: 1; }
+
+/* Yanzi: the tags as the case study's boxes (Space Mono, capitals, thin outline) */
+.wg-tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.wg-tags .pill { font: 400 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .04em; padding: 6px 10px; border-radius: 4px; color: #000; pointer-events: none; }
+.wg-kind { color: #8a8a8a; }
+.wg-meta .wg-y { align-self: flex-end; }
+
+/* List view = E5's work index (work.css), placed in the page instead of over it */
+.wg .wi-layer { position: static; inset: auto; z-index: auto; opacity: 1; pointer-events: auto; overflow: visible; background: none; }
+.wg .wi-layer[hidden] { display: none; }
+.wi-row.is-empty, .wi-row.is-empty * { color: #aaa !important; cursor: default; }   /* from home.css: Coming soon rows */
+/* Yanzi: letters were cut (line-height 1 + overflow hidden clipped g / y) — give the line room */
+.wg-intro { line-height: 1.5; padding: 2px 0; }
+/* never hide words behind "…": the line wraps on narrow screens and the label row grows */
+.wg-intro { white-space: normal; overflow: visible; text-overflow: clip; min-width: 0; }
+.wg-label { height: auto; min-height: 48px; padding-top: 8px; padding-bottom: 8px; }
+.wg-view { flex: none; }
+
+/* Yanzi: the Rite Aid motion plays at its real size (no shrinking inside the video); instead the
+   row it shares with Stay in Lign is shorter — wide cover 16:9, narrow cover 4:3 (nearly level) */
+.wg-row.is-flip:has(a[href*="rite-aid"]) > :first-child .wg-img { aspect-ratio: 4 / 3; }
+.wg-row.is-flip:has(a[href*="rite-aid"]) > :nth-child(2) .wg-img { aspect-ratio: 16 / 9; }
+
+/* Yanzi 2026-11-13, after basedesign.com: a short line under each project's name, in the same small size,
+   black, plain — it appears when the project is hovered (its line is kept, so nothing moves); always shown on touch */
+.wg-line { margin: 0; padding: 4px 12px 0; font: 400 13px/1.3 var(--sans); color: #000;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity .3s ease; }
+@media (hover: hover) { a.wg-col:hover .wg-line { opacity: 1; } }
+@media (hover: none) { .wg-line { opacity: 1; } }
+
+/* Yanzi 2026-11-13: spacing that breathes — one system for every card:
+   · the image keeps a 12px frame inside its lines (sides and bottom), like a mount
+   · text needs more air than an image: the name sits 18px under the row line (its leading adds ~3px)
+   · name → description 6px (one unit); tags → image 12px (the same as the image's frame) */
+.wg-name { padding-top: 18px; }
+.wg-line { padding-top: 6px; }
+.wg-meta { padding-bottom: 12px; }
+@media (max-width: 700px) { .wg-name { padding-top: 14px; } }

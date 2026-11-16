@@ -196,7 +196,7 @@
 .home.refined .h-now h2 { font: 500 clamp(64px, 8.3vw, 120px)/.95 var(--sans); letter-spacing: -.045em; }
 .home.refined .h-now .yr { display: none; }
 .home.refined .h-modes { margin-top: 16px; font: 400 14px/1 var(--sans); }
-.home.refined .h-modes button { color: #777; }
+.home.refined .h-modes button { color: #6b6b6b; }
 .home.refined .h-modes button[aria-pressed="true"] { color: var(--ink); }
 
 /* footer: one background colour — no cream band, a hairline instead */
@@ -381,8 +381,8 @@ body.leaving .home { opacity: 0; transform: scale(.985); transition: opacity .35
   font: 400 13px/1 var(--sans);
 }
 .pv-num { color: var(--ink); font-weight: 500; }
-.pv-cat { color: #777; text-transform: lowercase; }
-.pv-yr { margin-left: auto; color: #777; }
+.pv-cat { color: #6b6b6b; text-transform: lowercase; }
+.pv-yr { margin-left: auto; color: #6b6b6b; }
 .pv-mid { align-self: center; padding: 28px 0; }
 .pv-cover {
   display: block; padding: 0; cursor: e-resize;
@@ -446,3 +446,393 @@ body { background: #fff; color: var(--ink); overflow: hidden; }
   background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0) 40%, rgba(255,255,255,0) 70%, rgba(255,255,255,.25));
 }
 .pv-blur { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; }
+
+/* =====================================================================
+   E3 — scrolling preview panel (teacher feedback; set-up after alanxu.info, our own layout)
+   The label line stays on the nav line; below it the whole project scrolls:
+   title → tags → summary → facts → every image / video → link to the full case study.
+   ===================================================================== */
+.pv-book { grid-template-rows: 96px 1fr; height: 100%; }
+.pv-top { position: relative; z-index: 2; }
+.pv-scroll {
+  margin: 0 -56px 0 -64px; padding: 36px 56px 72px 64px;   /* full panel width so the scrollbar sits on the edge */
+  overflow-y: auto; overscroll-behavior: contain; min-height: 0;
+  scrollbar-width: thin; scrollbar-color: #bdbdbd transparent;
+}
+.pv-head { margin-bottom: 36px; }
+.pv-name { margin: 0; font: 500 40px/1.02 var(--sans); letter-spacing: -.025em; }
+.pv-tags { margin: 10px 0 0; font: 400 15px/1.3 var(--sans); color: #6b6b6b; }
+.pv-sum { margin: 20px 0 0; max-width: 32em; font: 400 16px/1.5 var(--sans); color: #333;
+  display: block; -webkit-line-clamp: unset; overflow: visible; }
+.pv-facts { margin: 24px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px 24px;
+  font: 400 13px/1.4 var(--sans); }
+.pv-facts dt { color: #6b6b6b; margin-bottom: 2px; }
+.pv-facts dd { margin: 0; }
+.pv-gallery { display: grid; gap: 12px; }
+.pv-fig { margin: 0; overflow: hidden; background: #e6e6e6; }
+.pv-fig > img, .pv-fig > video { display: block; width: 100%; height: auto; }
+.pv-fig[style*="aspect-ratio"] > img, .pv-fig[style*="aspect-ratio"] > video { height: 100%; object-fit: cover; }   /* crops baked-in black bars */
+.pv-ph { background: hsl(var(--hue) 55% 72%); }
+.pv-more {
+  display: inline-flex; gap: 8px; margin-top: 36px;
+  font: 500 15px/1.3 var(--sans); color: var(--ink);
+  text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px;
+}
+.pv-more:hover { opacity: .5; }
+@media (max-width: 900px) {
+  .pv-book { grid-template-rows: 68px 1fr; }
+  .pv-scroll { margin: 0 -24px; padding: 28px 24px 64px; }
+  .pv-name { font-size: 32px; }
+}
+
+/* E3: the panel takes half the screen; everything behind it (archive, logo, nav, footer) blurs
+   under a light white veil, so the eye stays on the panel. Click the blur to close. */
+.pv { width: 50vw; min-width: 480px; }
+.pv-scroll { padding-left: 72px; padding-right: 64px; }
+.pv-sum, .pv-facts { max-width: 34em; }
+.h-reel.is-previewing .h-track.cloud { transform: none; }
+.home { transition: filter .6s cubic-bezier(.2,.8,.2,1); }
+body.previewing .home { filter: blur(16px) saturate(.85); }
+.pv-veil {
+  position: fixed; inset: 0; z-index: 3550; background: rgba(255,255,255,.35);
+  opacity: 0; pointer-events: none; transition: opacity .6s cubic-bezier(.2,.8,.2,1); cursor: pointer;
+}
+body.previewing .pv-veil { opacity: 1; pointer-events: auto; }
+.pv { background: rgba(248,248,248,.82); }
+.pv-blur { display: none; }
+body.previewing .frame-tag { display: none; }
+@media (max-width: 900px) { .pv { width: 100vw; min-width: 0; } }
+
+/* E3 (Yanzi): only the archive blurs — logo, nav (work · about · playground · en/中文) and the
+   footer stay sharp. The panel sits inside the page frame: from the nav line to the footer line. */
+body.previewing .home { filter: none; }
+.h-reel { transition: filter .6s cubic-bezier(.2,.8,.2,1); }
+body.previewing .h-reel { filter: blur(16px) saturate(.85); }
+.pv-veil { top: 96px; bottom: 44px; }
+.pv { top: 96px; bottom: 44px; border-left: 1px solid var(--ink); }
+.pv-book { grid-template-rows: 48px 1fr; }
+.pv-top { padding-top: 0; align-items: center; }
+.pv-x { top: 50%; }
+@media (max-width: 900px) {
+  .pv-veil, .pv { top: 68px; }
+  .pv-book { grid-template-rows: 44px 1fr; }
+  .pv-top { padding-top: 0; }
+}
+body.previewing .h-reel { clip-path: inset(0); }   /* keep the blur inside the archive — no haze over the nav or footer */
+
+/* E3: lines always run edge to edge inside the panel — the panel itself has no side padding;
+   the label row and the scrolling content carry their own. (Before, negative margins didn't
+   match the padding at some widths, so the label-row line stopped short of both edges.) */
+.pv .pv-book { padding: 0; width: 100%; max-width: none; margin: 0; }   /* an old E2 rule capped + centred it */
+.pv .pv-top { margin: 0; padding: 0 64px 0 72px; }
+.pv .pv-scroll { margin: 0; padding: 36px 64px 72px 72px; }
+@media (max-width: 900px) {
+  .pv .pv-top { margin: 0; padding: 0 24px; }
+  .pv .pv-scroll { margin: 0; padding: 28px 24px 64px; }
+}
+/* E3: every project's panel has the same structure — four facts in one row */
+.pv-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .pv-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ?focus=1 demo (option A): images scale + colour by distance from the panel's middle;
+   a fixed "( )" mark sits at the middle, like obys Odin's Crow, drawn in our thin line */
+.pv-bracket { display: none; }
+body.focus-mode .pv-fig { transform-origin: center; will-change: transform, filter; transition: none; }
+body.focus-mode .pv-gallery { gap: 4px; padding-bottom: 30vh; }   /* room so the last image can reach the middle */
+body.focus-mode .pv-head { padding-bottom: 8vh; }
+body.focus-mode .pv-bracket {
+  display: block; position: absolute; left: 34px; right: 30px; top: calc(48px + (100% - 48px) / 2); height: 56px;
+  margin-top: -28px; pointer-events: none; z-index: 3;
+}
+body.focus-mode .pv-bracket::before, body.focus-mode .pv-bracket::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 14px; border: 1.5px solid var(--ink);
+}
+body.focus-mode .pv-bracket::before { left: 0; border-right: 0; border-radius: 28px 0 0 28px; }
+body.focus-mode .pv-bracket::after { right: 0; border-left: 0; border-radius: 0 28px 28px 0; }
+body.focus-mode .pv-x { top: 96px; }   /* moves up so it doesn't sit on the bracket */
+body.focus-mode .pv-bracket { display: none; }   /* Yanzi: no "( )" mark — scale + colour already show the focus */
+body.focus-mode .pv-x { top: 50%; }
+
+/* E3: gallery rows — full / half (2 side by side) / third (3 side by side). Each row is one unit
+   for the focus effect: the whole row grows and turns to colour together. */
+.pv-row { display: grid; gap: 12px; }
+.pv-row-half { grid-template-columns: 1fr 1fr; }
+.pv-row-third { grid-template-columns: 1fr 1fr 1fr; }
+.pv-row-half .pv-fig, .pv-row-third .pv-fig { aspect-ratio: auto; }
+.pv-row-half .pv-fig > *, .pv-row-third .pv-fig > * { height: 100%; object-fit: cover; }
+body.focus-mode .pv-row { transform-origin: center; will-change: transform, filter; }
+body.focus-mode .pv-fig { transform: none !important; filter: none !important; }
+/* tighter spacing: rows keep a constant 16px visible gap (JS); no extra air under the header */
+body.focus-mode .pv-head { padding-bottom: 0; margin-bottom: 28px; }
+body.focus-mode .pv-gallery { gap: 16px; }
+
+/* E3 panel rhythm (one scale): title → tags 8 · tags → summary 24 · summary → facts 32 ·
+   facts → first image 40 · between images 16 */
+.pv .pv-scroll { padding-top: 40px; }
+.pv-name { line-height: 1; }
+.pv-tags { margin-top: 8px; }
+.pv-sum { margin-top: 24px; font-size: 16px; line-height: 1.5; }
+.pv-facts { margin-top: 32px; }
+body.focus-mode .pv-head, .pv-head { margin-bottom: 40px; padding-bottom: 0; }
+body.focus-mode .pv-gallery, .pv-gallery { gap: 16px; }
+.pv-facts dd { line-height: 1.35; }
+
+/* E3 (Yanzi): with the panel open, the archive behind keeps turning and shows its colours —
+   a soft, moving, colourful blur instead of a static grey one */
+body.previewing .h-track.cloud .img { filter: none; }
+body.previewing .h-reel { filter: blur(14px); }
+
+/* E3 footer: quiet black-on-white at rest; on hover the whole strip turns white-on-black and
+   stops sliding, so the email is easy to read and click (same language as the black fill hovers) */
+.home.refined .h-foot { transition: background-color .35s cubic-bezier(.2,.8,.2,1), color .35s cubic-bezier(.2,.8,.2,1); }
+.home.refined .h-foot:hover { background: var(--ink); color: #fff; }
+.home.refined .h-foot:hover a { color: #fff; }
+.home.refined .h-foot:hover .h-mq-track { animation-play-state: paused; }
+
+/* E3: frosted-glass panel — the turning, colourful archive shows through as soft colour,
+   with grain on the surface and a little light at the top */
+.pv {
+  background: rgba(246, 246, 246, .56);
+  -webkit-backdrop-filter: blur(28px) saturate(1.15); backdrop-filter: blur(28px) saturate(1.15);
+}
+.pv::before { opacity: .38; }   /* grain */
+.pv::after { background: linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,.08) 35%, rgba(255,255,255,0) 70%, rgba(255,255,255,.18)); }
+
+/* ===== E3 critique fixes (2026-10-25) ===== */
+/* hint by the cursor: "view →" after the name */
+.h-tip .tip-go { margin-left: 6px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+/* images fade out near the nav line and the footer line instead of being cut by them */
+.home.refined .h-reel {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 72px, #000 calc(100% - 56px), transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 72px, #000 calc(100% - 56px), transparent 100%);
+}
+/* phone: two-row nav — logo centred on top, links left + right below; × top-right in the panel */
+@media (max-width: 700px) {
+  .home.refined { grid-template-rows: 100px 1fr auto; --nav-fs: 15px; --logo-h: 40px; }
+  .home.refined .h-nav {
+    grid-template-columns: 1fr 1fr; grid-template-areas: "brand brand" "l r";
+    align-items: baseline; row-gap: 14px; padding: 12px 16px 0;
+  }
+  .home.refined .h-nav > .h-brand { grid-area: brand; grid-column: 1 / -1; justify-self: center; }
+  .h-nav-l { grid-area: l; gap: 18px; }
+  .h-nav-r { grid-area: r; gap: 14px; }
+  .pv-veil, .pv { top: 100px; }
+  .pv-x { left: auto; right: 14px; top: 64px; margin: 0; }
+  body.focus-mode .pv-x { top: 64px; }
+  .pv .pv-top { padding-right: 52px; }
+}
+/* E3: plain black-and-white at rest (no brightness / contrast wash-out), full colour on hover */
+.h-track.cloud .img { filter: grayscale(1); }
+.h-track.cloud .img.kin { filter: grayscale(.5); }
+.h-track.cloud .img.hot { filter: none; }
+
+/* ===== Nav trial: bar style (after the details-page bar) in the homepage type =====
+   logo left · work · about · index centred as outlined buttons · playground + en / 中文 right.
+   A: body.navbar-index → only while the index is open.  B: body.navbar-all → always. */
+body.navbar-all .home.refined .h-nav,
+body.navbar-index.indexing .home.refined .h-nav {
+  grid-template-columns: 1fr auto 1fr; align-items: center; padding-top: 0;
+}
+body.navbar-all .home.refined .h-nav > .h-brand,
+body.navbar-index.indexing .home.refined .h-nav > .h-brand { grid-column: 1; grid-row: 1; justify-self: start; }
+body.navbar-all .h-nav-l,
+body.navbar-index.indexing .h-nav-l { grid-column: 2; grid-row: 1; justify-self: center; gap: 8px; align-items: center; }
+body.navbar-all .h-nav-r,
+body.navbar-index.indexing .h-nav-r { grid-column: 3; grid-row: 1; align-items: center; }
+body.navbar-all .h-logo,
+body.navbar-index.indexing .h-logo { --logo-h: 46px; height: 46px; margin-bottom: 0; }
+body.navbar-all .h-nav-l a,
+body.navbar-index.indexing .h-nav-l a {
+  padding: 6px 14px 7px; border: 1px solid var(--ink); border-radius: 6px; line-height: 1;
+  font-size: 17px; text-decoration: none !important; transition: background .2s, color .2s;
+}
+body.navbar-all .h-nav-l a .en, body.navbar-all .h-nav-l a .zh,
+body.navbar-index.indexing .h-nav-l a .en, body.navbar-index.indexing .h-nav-l a .zh { text-decoration: none !important; }
+body.navbar-all .h-nav-l a:hover,
+body.navbar-index.indexing .h-nav-l a:hover { opacity: 1; background: var(--ink); color: #fff; }
+body.navbar-all .h-nav-l a.is-current,
+body.navbar-index.indexing .h-nav-l a.is-current { background: var(--ink); color: #fff; }
+
+/* ===== Panel, centred — layout after alanxu.info (Yanzi, 2026-10-25) =====
+   ~40% wide, centred between the nav line and the footer line (our line system), solid light-grey
+   card, title 36px + grey category + 12–13px body + facts in columns; images full · two-up · full …;
+   × top-right inside. The blurred, turning archive shows on both sides. ?pvl=side = old right half. */
+body.pv-center .pv {
+  left: 30%; right: auto; width: 40%; min-width: 520px;
+  background: #dcdcdc; -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-left: 0; transform: translateY(24px); opacity: 0; pointer-events: none;
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .35s;
+}
+body.pv-center .pv[aria-hidden="false"] { transform: none; opacity: 1; pointer-events: auto; }
+body.pv-center .pv::before, body.pv-center .pv::after { display: none; }
+body.pv-center .pv .pv-top { padding: 0 48px 0 16px; border-bottom: 1px solid #000; }
+body.pv-center .pv .pv-scroll { padding: 16px 16px 48px; }
+body.pv-center .pv-x { left: auto; right: 14px; top: 14px; margin: 0; z-index: 3; width: 22px; height: 22px; }
+body.pv-center.focus-mode .pv-x { top: 14px; }
+body.pv-center .pv-name { font-size: 36px; letter-spacing: -.02em; }
+body.pv-center .pv-tags { margin-top: 6px; font-size: 13px; color: #6b6b6b; }
+body.pv-center .pv-sum { margin-top: 14px; font-size: 13px; line-height: 1.45; color: #000; max-width: none; }
+body.pv-center .pv-facts { margin-top: 18px; grid-template-columns: repeat(4, minmax(0, 1fr)); font-size: 13px; }
+body.pv-center .pv-facts dt { color: #000; }
+body.pv-center .pv-head { margin-bottom: 24px; }
+body.pv-center .pv-gallery, body.pv-center.focus-mode .pv-gallery { gap: 10px; padding-bottom: 0; }
+body.pv-center .pv-row { gap: 10px; }
+body.pv-center .pv-row-half .pv-fig { aspect-ratio: 3 / 4; }
+body.pv-center .pv-row-half .pv-fig > * { height: 100%; object-fit: cover; }
+body.pv-center .pv-more { margin-top: 24px; }
+@media (max-width: 900px) { body.pv-center .pv { left: 0; width: 100%; min-width: 0; } }
+body.pv-center .pv-row-third .pv-fig { aspect-ratio: 3 / 4; }
+body.pv-center .pv-row-third .pv-fig > * { height: 100%; object-fit: cover; }
+/* side-by-side rows share one height; each image keeps its own ratio (no cropping) */
+body.pv-center .pv-row-half, body.pv-center .pv-row-third { display: flex; gap: 10px; }
+body.pv-center .pv-row-half .pv-fig, body.pv-center .pv-row-third .pv-fig { flex: var(--a, 1.5) 1 0; aspect-ratio: var(--a, 1.5); min-width: 0; }
+body.pv-center .pv-row-half .pv-fig > *, body.pv-center .pv-row-third .pv-fig > * { width: 100%; height: 100%; object-fit: cover; }
+
+/* curated inner layout in her own (right-half) panel too: videos alone, pairs side by side,
+   one shared height per row, each image keeps its ratio */
+.pv-gallery { gap: 10px; }
+.pv-row { gap: 10px; }
+.pv-row-half, .pv-row-third { display: flex; gap: 10px; }
+.pv-row-half .pv-fig, .pv-row-third .pv-fig { flex: var(--a, 1.5) 1 0; aspect-ratio: var(--a, 1.5); min-width: 0; }
+.pv-row-half .pv-fig > *, .pv-row-third .pv-fig > * { width: 100%; height: 100%; object-fit: cover; }
+/* facts: only Client + Special thanks, two columns; hidden when empty */
+.pv-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pv-facts:empty { display: none; }
+/* no empty run-out under the last image: the link sits 40px below it (same rhythm as above) */
+body.focus-mode .pv-gallery, .pv-gallery { padding-bottom: 0; }
+.pv-more { margin-top: 40px; }
+
+/* critique fixes 2 */
+.pv-cat { text-transform: none; }                                   /* UI/UX keeps its capitals */
+body.previewing .h-track.cloud .img:empty,
+body.indexing .h-track.cloud .img:empty { filter: grayscale(1); }  /* placeholder blocks stay grey behind the panel */
+/* crisp: frames laid out at 2× and scaled down in JS (RES = 0.5) — never stretched up */
+.h-track.cloud { --w: 17vw; }
+@media (max-width: 900px) { .h-track.cloud { --w: 40vw; } }
+.h-track.cloud .img > img { image-rendering: auto; }
+/* panel: same 3% overscan on the bar-cropped videos (a 1px dark sliver was left at the edge) */
+.pv-fig[style*="aspect-ratio"] > video { transform: scale(1.03); }
+.h-track.cloud .img > video { transform: scale(1.03); }
+/* optical alignment: the logo's ink (not its box) sits on the 24px margin, like the text below it */
+.h-logo { margin-left: calc(var(--logo-h, 46px) * -47 / 384); }
+body.navbar-all .h-logo, body.navbar-index.indexing .h-logo { margin-left: calc(46px * -47 / 384); }
+/* footer trial: black strip, white text; on hover it turns back to white so the email stays easy to click */
+body.foot-dark .home.refined .h-foot { background: #000; color: #fff; border-top-color: #000; }
+body.foot-dark .home.refined .h-foot a { color: #fff; }
+body.foot-dark .home.refined .h-foot:hover { background: #fff; color: #000; }
+body.foot-dark .home.refined .h-foot:hover a { color: #000; }
+
+/* E3 (Yanzi): close × moves to the top-right corner, centred in the 48px label row.
+   Ink of the × ends 24px from the right edge — same edge as "en / 中文" in the nav. */
+.pv-x, body.focus-mode .pv-x { left: auto; right: 18px; top: 10px; margin: 0; z-index: 3; }
+/* the left side no longer has to clear the ×, so the content gets even 64px sides */
+.pv .pv-top { padding-left: 64px; }
+.pv .pv-scroll { padding-left: 64px; }
+@media (max-width: 900px) {
+  .pv-x, body.focus-mode .pv-x { right: 10px; top: 8px; }
+  .pv .pv-top { padding: 0 52px 0 24px; }
+  .pv .pv-scroll { padding-left: 24px; }
+}
+body.pv-center .pv-x, body.pv-center.focus-mode .pv-x { right: 14px; top: 14px; width: 22px; height: 22px; }
+
+
+/* E3 (Yanzi): the panel was the only grey thing left on a white site — white frost now.
+   Same blur (the archive still shows through softly), white glass, grain barely there. */
+.pv { background: rgba(255, 255, 255, .74); }
+.pv::before { opacity: .1; }
+.pv::after { background: none; }
+
+/* ===== E4 panel (Yanzi + references: Alan Xu, Base Design, obys) — plain words, no new boxes =====
+   1. 01/08 is information, not a control: grey and regular, like the category
+   2. "Read the case study →" sits under the summary, where people are reading
+   3. the panel ends with "Next project — Name →" (click = the panel shows that project) */
+.pv-num { color: #6b6b6b; font-weight: 400; font-variant-numeric: tabular-nums; }
+.pv-head .pv-more { display: inline-flex; margin: 16px 0 4px; }
+.pv-next {
+  display: block; width: 100%; margin-top: 56px; padding: 12px 0 8px; text-align: left;
+  border-top: 1px solid #000; background: none; color: #000; cursor: pointer;
+}
+.pv-next[hidden] { display: none; }
+.pv-next-k { display: block; font: 400 13px/1.2 var(--sans); color: #6b6b6b; }
+.pv-next-name { display: block; margin-top: 8px; font: 500 32px/1.05 var(--sans); letter-spacing: -.025em; }
+.pv-next-name [aria-hidden] { display: inline-block; transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+.pv-next:hover .pv-next-name [aria-hidden] { transform: translateX(8px); }
+.pv-next:hover #pv-next-name { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+.pv-book.swap .pv-scroll { animation: pv-in .5s cubic-bezier(.16, 1, .3, 1); }
+@keyframes pv-in { from { opacity: 0; transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) { .pv-book.swap .pv-scroll { animation: none; } }
+/* Yanzi: one continuous line under "Read the case study →" (the text underline broke at the arrow) */
+.pv-more { text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 3px; gap: 8px; }
+.pv-more:hover { opacity: .5; }
+
+/* ===== E5 — UX fixes (2026-11-01) =====
+   1. the homepage gets the site's second line: who this is · what to do · Images / List
+   2. Contact in the nav on every page
+   3. the review switcher (A · B · … · E5) only with ?frames=1 */
+.home.refined { grid-template-rows: 96px 48px 1fr auto; }
+.h-label {
+  position: relative; z-index: 3400; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  height: 48px; padding: 0 var(--m); border-bottom: 1px solid var(--ink); background: #fff;
+  font: 400 13px/1 var(--sans);
+}
+.h-intro { margin: 0; color: #555; }
+.h-intro b { color: #000; font-weight: 500; }
+.h-hint { margin: 0; color: #555; transition: opacity .6s; }
+.h-hint::before { content: "↓ "; }
+.h-hint.done { opacity: 0; }
+.h-view { justify-self: end; display: flex; gap: 6px; color: #999; }
+.h-view a { color: #6b6b6b; }
+.h-view a:hover { color: #000; }
+.h-view a.is-current { color: #000; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.h-contact:hover { opacity: .5; }
+.frame-tag[hidden] { display: none !important; }
+/* the List view opens under the label row, so Images / List stays in reach */
+body .wi-layer { top: 144px; }
+@media (max-width: 900px) {
+  .h-label { grid-template-columns: 1fr auto; }
+  .h-hint { display: none; }
+  .h-intro span { display: none; }
+}
+@media (max-width: 700px) {
+  .home.refined { grid-template-rows: 100px 48px 1fr auto; }
+  body .wi-layer { top: 148px; }
+}
+body.indexing .h-hint { opacity: 0; }
+.wi-row.is-empty, .wi-row.is-empty * { color: #aaa !important; cursor: default; }
+
+/* E5 phone nav: two rows — logo + contact / language on top, the three pills below (all reachable) */
+@media (max-width: 700px) {
+  .home.refined { grid-template-rows: auto 48px 1fr auto; }
+  body.navbar-all .home.refined .h-nav {
+    grid-template-columns: 1fr auto; grid-template-rows: auto auto; row-gap: 12px;
+    height: auto; padding: 14px var(--m) 12px;
+  }
+  body.navbar-all .home.refined .h-nav > .h-brand { grid-column: 1; grid-row: 1; justify-self: start; }
+  body.navbar-all .h-nav-r { grid-column: 2; grid-row: 1; gap: 14px; }
+  body.navbar-all .h-nav-l { grid-column: 1 / -1; grid-row: 2; justify-self: start; gap: 6px; }
+  body.navbar-all .h-logo { --logo-h: 34px; height: 34px; }
+  body.navbar-all .h-nav-l a { font-size: 14px; padding: 5px 10px 6px; }
+  .h-nav-r { font-size: 15px; }
+  body .wi-layer { top: 170px; }
+}
+
+/* E5 UX: empty project slots keep their grey blocks (Yanzi: "还是要有 block") but are not links —
+   no hand cursor, no "open" cursor; hover shows "Coming soon" */
+.h-track.cloud .img.is-empty { cursor: default; }
+.pv-sum:empty { display: none; }
+
+/* E5 perf (Yanzi: "点开 case study 会卡一下"): the panel no longer re-blurs what is behind it on every
+   frame of its slide (the archive behind is already blurred, so it looks the same), and the
+   archive's blur layer exists before the panel opens instead of being built at that moment */
+.pv { -webkit-backdrop-filter: none; backdrop-filter: none; }
+.h-reel { will-change: filter; }
+/* Yanzi "重影了": without the backdrop blur, the label row behind (Images / List) showed through the
+   panel's top line. The panel is solid now — same light grey, nothing ghosts through. */
+.pv { background: #f6f6f6; }
+
+/* (a browser cross-fade between pages was tried 2026-11-01 and removed: the two pages blended into a flash — Yanzi "闪") */
+
+/* Yanzi: the panel's light grey wasn't used anywhere else on the site — white like every page;
+   the black line on its left edge and the blurred archive already set it apart */
+.pv { background: #fff; }
+.pv-num:empty { display: none; }

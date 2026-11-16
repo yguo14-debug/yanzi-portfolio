@@ -1,0 +1,14 @@
+/* E7 — dot cursor over the homepage work grid (same dot as the Playground's) */
+@media (hover: hover) {
+  #wg-track, #wg-track a, #wg-track * { cursor: none; }
+  .dot7 {
+    position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none;
+    width: 8px; height: 8px; margin: -4px 0 0 -4px;   /* Yanzi: smaller (was 12) */ border-radius: 50%;
+    background: #fff; mix-blend-mode: difference;   /* black on white, white on a dark cover */
+    opacity: 0; transition: opacity .2s, width .25s, height .25s, margin .25s;
+  }
+  .dot7.on { opacity: 1; }
+  .dot7.big { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
+}
+.dot7 { display: block; }
+@media (hover: none) { .dot7 { display: none; } }

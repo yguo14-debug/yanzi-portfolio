@@ -1,0 +1,15 @@
+/* E4: Yanzi's "yanzi guo" logo (logo motion.ai) in place of "yanzi."; it folds to "ỳz̄" (logo-motion.js).
+   Box = the wordmark's ink (viewBox 20.8 0 1105.7 260.2): baseline at 191.2, descender below.
+   Sized so its x-height matches the old logo's; the descender hangs below the line as before. */
+svg.h-logo, svg.bar-logo { overflow: visible; }
+.home.refined .h-nav .h-logo {
+  height: calc(var(--logo-h) * .968);
+  margin-bottom: calc(var(--logo-h) * .968 * -69 / 260.2);
+  margin-left: 0;
+}
+body.navbar-all .home.refined .h-nav .h-logo,
+body.navbar-index.indexing .home.refined .h-nav .h-logo { height: calc(46px * .968); margin-bottom: 0; margin-left: 0; }
+.bar .bar-logo { height: calc(46px * .968); margin-left: 0; transform: none; }
+@media (max-width: 700px) { .bar .bar-logo { height: calc(34px * .968); } }
+/* E5 phone nav: the logo is 34px there */
+@media (max-width: 700px) { body.navbar-all .home.refined .h-nav .h-logo { height: calc(34px * .968); } }

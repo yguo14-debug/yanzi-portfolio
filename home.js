@@ -40,8 +40,16 @@ const mediaOf = (p) => [...new Set([...(p.preview || []), p.cover, ...(p.gallery
 // floating frames: a project with real media floats each image once (no duplicates);
 // a project without media yet floats PER grey placeholders
 const SLOTS = [];
+// E5 perf: the floating archive shows stills only (a project falls back to video only if it has
+// no images) — an HD video decoding inside a small spinning frame cost frames on every turn
+const isVideo = (m) => /\.(mp4|webm)$/i.test(m);
+const cloudOf = (p) => {
+  const all = [...new Set([...(p.preview || []), p.cover, ...(p.gallery || []).map((g) => g.src)].filter(Boolean))];
+  const stills = all.filter((m) => !isVideo(m));
+  return (stills.length ? stills : all).slice(0, PER);
+};
 for (let k = 0; k < PER; k++) PROJECTS.forEach((p, i) => {
-  const list = mediaOf(p);
+  const list = cloudOf(p);
   if (!list.length) SLOTS.push({ i, k, src: null });
   else if (k < list.length) SLOTS.push({ i, k, src: list[k] });
 });
@@ -53,6 +61,9 @@ track.innerHTML = SLOTS.map(({ i, k, src }, j) => {
     : `<img src="${src}" alt="" draggable="false">`;
   const ar = ASPECTS[Math.floor(seed(j + 3) * ASPECTS.length)];
   const tone = 78 + Math.round(seed(j + 9) * 14);                       // grey value of the placeholder
+  // E5 UX: an empty slot is a grey block but not a link — no hand cursor; hover says "Coming soon"
+  if (p.empty) return `<span class="img is-empty" data-i="${i}" data-j="${j}" aria-hidden="true"
+      style="--ar:${ar};--hue:${HUES[i % HUES.length]};--tone:${tone}%"></span>`;
   return `<a class="img" href="project.html?id=${p.id}" draggable="false" data-i="${i}" data-j="${j}"
       style="--ar:${ar};--hue:${HUES[i % HUES.length]};--tone:${tone}%"${k ? ' tabindex="-1"' : ""}
       aria-label="${p.en}">${inner}</a>`;
@@ -86,9 +97,23 @@ let hot = null;          // the image under the mouse
 let W = innerWidth, H = 600, U = 120;   // viewport, scene height, base image width
 
 // fixed per-image values (seeded → same every visit)
-const R = items.map((_, j) => ({
-  a: seed(j + 11), b: seed(j + 23), c: seed(j + 37), d: seed(j + 51),
-}));
+// Balanced placement (E3, Yanzi: 有大有小 balance): positions follow a Halton sequence, which
+// spreads points evenly — no clumps, no empty corners — instead of plain random numbers.
+// Sizes cycle big / small / medium so neighbours differ; real work gets the bigger sizes.
+const halton = (n, base) => { let f = 1, r = 0; while (n > 0) { f /= base; r += f * (n % base); n = Math.floor(n / base); } return r; };
+const SIZES_REAL = [1, 0.55, 0.8, 0.35, 0.95, 0.6, 0.75, 0.45];   // → scale 0.55 + d × 0.9
+const SIZES_GREY = [0.3, 0.1, 0.45, 0.2, 0.05, 0.35];
+let nReal = 0, nGrey = 0;
+const R = items.map((el, j) => {
+  const real = !!el.firstElementChild;
+  if (j === 0) return { a: 0.5, b: 0.47, c: 0.9, d: 1.75 };   // Project 01's first image: centre, near, biggest
+  return {
+    a: 0.06 + 0.88 * halton(j + 1, 2),   // across  (kept off the very edges)
+    b: 0.08 + 0.84 * halton(j + 1, 3),   // up / down
+    c: halton(j + 1, 5),                 // depth
+    d: real ? SIZES_REAL[nReal++ % SIZES_REAL.length] : SIZES_GREY[nGrey++ % SIZES_GREY.length],
+  };
+});
 
 const deg = (r) => r * 180 / Math.PI;
 const ZERO = { x: 0, y: 0, z: 0, gz: 0, gx: 0, gy: 0, ga: 0, lx: 0, ly: 0, lz: 0, ry: 0, s: 1, o: 1 };
@@ -97,12 +122,13 @@ const ZERO = { x: 0, y: 0, z: 0, gz: 0, gx: 0, gy: 0, ga: 0, lx: 0, ly: 0, lz: 0
 function targetFor(j) {
   const r = R[j];
   const g = spin * 0.35;
-  const px = (r.a * 2 - 1) * W * 0.75, py = (r.b * 2 - 1) * H * 0.55, pz = -1400 + r.c * 1700;
+  const px = (r.a * 2 - 1) * W * 0.75, py = (r.b * 2 - 1) * H * 0.68, pz = -1400 + r.c * 1700;
   const zr = px * Math.sin(g) + pz * Math.cos(g);
   return { z: -300, gy: deg(g), lx: px, ly: py, lz: pz, ry: -deg(g),
-           s: 0.55 + r.d * 0.9, o: zr > 900 ? 0 : 0.35 + 0.65 * Math.min(1, (zr + 1400) / 1800) };
+           s: 0.55 + r.d * 0.9, o: zr > 900 ? 0 : 1 };   // E3 (Yanzi): solid images — depth shows through size only, never transparency
 }
 
+const RES = 0.5;   // frames are drawn at 2× (see --w in home.css) and scaled by RES
 /* ---------- loop ---------- */
 const cur = items.map(() => ({ ...ZERO, o: 0 }));
 const ANG = ["gz", "gx", "gy", "ga", "ry"];
@@ -111,7 +137,8 @@ function tick(now) {
   const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
   W = innerWidth; H = reel.clientHeight; U = items[0].offsetWidth || U;
   // slow turning by itself; much slower while an image is under the mouse
-  if (!reduce) spin += (0.09 * (hot ? 0.15 : 1) * (pvOpen ? 0.4 : 1)) * dt + vel * dt;
+  // E3: keeps turning at full speed while the panel is open, so the blurred left side stays alive
+  if (!reduce) spin += (0.09 * (hot && !pvOpen ? 0.15 : 1)) * dt + vel * dt;
   vel *= Math.pow(0.12, dt);
   const k = reduce ? 1 : 1 - Math.pow(0.02, dt);   // ~same feel at any frame rate
   items.forEach((el, j) => {
@@ -124,14 +151,16 @@ function tick(now) {
       if (ANG.includes(key)) v[key] += 360 * Math.round((t[key] - v[key]) / 360);
       v[key] += (t[key] - v[key]) * k;
     }
+    // crisp images: frames are laid out at 2× size (CSS --w) and scaled DOWN here, so the browser
+    // never stretches a small render (that was what made them look blurry)
     el.style.transform =
       `translate3d(${v.x}px,${v.y}px,${v.z}px) rotateZ(${v.gz}deg) rotateX(${v.gx}deg) rotateY(${v.gy}deg) rotateX(${v.ga}deg) ` +
-      `translate3d(${v.lx}px,${v.ly}px,${v.lz}px) rotateY(${v.ry}deg) scale(${v.s})`;
+      `translate3d(${v.lx}px,${v.ly}px,${v.lz}px) rotateY(${v.ry}deg) scale(${(v.s * RES).toFixed(4)})`;
     const o = Math.max(0, Math.min(1, v.o));
     el.style.opacity = o.toFixed(3);
     el.style.pointerEvents = o < 0.3 ? "none" : "";
   });
-  if (pvOpen) drawFrost();
+  // E3: the whole page blurs behind the panel (CSS), so no frosted shapes are drawn in it
   requestAnimationFrame(tick);
 }
 
@@ -159,7 +188,7 @@ function drawFrost() {
 function showTip(el) {
   if (!el) { tip.classList.remove("on"); return; }
   const i = +el.dataset.i, p = PROJECTS[i], L = lang();
-  tip.innerHTML = `<span class="tip-n">${String(i + 1).padStart(2, "0")}</span> ${p[L]} <span class="tip-y">${p.year}</span>`;
+  tip.innerHTML = `${p[L]} <span class="tip-y">${p.year || ""}</span>`;   // E5 (Yanzi): no project numbers   // no "view →" (Yanzi: not needed)
   tip.classList.add("on");
 }
 function setHot(el) {
@@ -176,8 +205,23 @@ function setHot(el) {
 
 /* ---------- input ---------- */
 let down = null, moved = 0, lastX = 0, pid = null;
+// Which image is at (x, y)? Our own test instead of the browser's: 3D hit-testing is unreliable
+// in some browsers (Safari), and people click quickly / near edges. Pick the frontmost (largest
+// on screen) visible image whose box, grown by 12px, contains the point.
+const PAD = 12;
+function pickAt(x, y) {
+  let best = null, bestArea = 0;
+  items.forEach((el, j) => {
+    if (cur[j].o < 0.2) return;
+    const r = el.getBoundingClientRect();
+    if (x < r.left - PAD || x > r.right + PAD || y < r.top - PAD || y > r.bottom + PAD) return;
+    const area = r.width * r.height;
+    if (area > bestArea) { best = el; bestArea = area; }
+  });
+  return best;
+}
 reel.addEventListener("pointerdown", (e) => {
-  down = e.target.closest(".img"); moved = 0; lastX = e.clientX; pid = e.pointerId;
+  down = pickAt(e.clientX, e.clientY); moved = 0; lastX = e.clientX; pid = e.pointerId;
   reel.dataset.down = "1";
 });
 reel.addEventListener("pointermove", (e) => {
@@ -190,20 +234,20 @@ reel.addEventListener("pointermove", (e) => {
     if (moved > 6) vel += dx * 0.004;
     return;
   }
-  const el = overUI ? null : e.target.closest(".img");
+  const el = overUI ? null : pickAt(e.clientX, e.clientY);
   setHot(el);
-  cursor.classList.toggle("big", !!el);
+  cursor.classList.toggle("big", !!el && !el.classList.contains("is-empty"));   // no "open" cursor on empty slots
 });
 reel.addEventListener("pointerleave", () => { if (!reel.dataset.down) setHot(null); });
 const release = (e) => {
   if (!reel.dataset.down) return;
   delete reel.dataset.down;
-  if (moved <= 6 && down) openPreview(+down.dataset.j);
+  if (moved <= 6 && down && !PROJECTS[+down.dataset.i].empty) openPreview(+down.dataset.j);   // E5: "Coming soon" slots don't open
 };
 reel.addEventListener("pointerup", release);
 reel.addEventListener("pointercancel", () => { delete reel.dataset.down; });
 track.addEventListener("click", (e) => { if (e.target.closest(".img")) e.preventDefault(); });
-track.addEventListener("keydown", (e) => { const c = e.target.closest(".img"); if (c && e.key === "Enter") openPreview(+c.dataset.j); });
+track.addEventListener("keydown", (e) => { const c = e.target.closest(".img"); if (c && e.key === "Enter" && !PROJECTS[+c.dataset.i].empty) openPreview(+c.dataset.j); });
 
 reel.addEventListener("wheel", (e) => {
   e.preventDefault();
@@ -213,7 +257,7 @@ reel.addEventListener("wheel", (e) => {
 
 /* ---------- preview panel ("bookstore" card) ---------- */
 const pv = document.getElementById("pv");
-let pvOpen = false, pvI = -1;
+let pvOpen = false, pvI = -1, pvOpener = null;
 // the project's preview set: its first SHOW images (the 4th floating copy repeats one of them)
 const imgsOf = (i) => {
   // one dot per different image (a project with 1 video shows 1, not 3 copies of it)
@@ -237,50 +281,144 @@ let pvJ = -1;
 function renderPreview(j) {
   const src = items[j], i = +src.dataset.i, p = PROJECTS[i], L = lang();
   pvI = i; pvJ = j;
-  const set = imgsOf(i);
-  let k = set.indexOf(src);
-  if (k < 0) {   // a repeated floating copy → the same image in the set
-    const key = src.firstElementChild ? src.firstElementChild.getAttribute("src") : null;
-    k = Math.max(0, set.findIndex((x) => x.firstElementChild && x.firstElementChild.getAttribute("src") === key));
-    pvJ = +set[k].dataset.j;
-  }
-  fillCover(document.getElementById("pv-cover"), src);
-  // level 3 — the label line: number · category · year
-  document.getElementById("pv-num").textContent = `${String(i + 1).padStart(2, "0")}/${String(N).padStart(2, "0")}`;
-  document.getElementById("pv-cat").textContent = p.type ? p.type[L] : "";
+  // label line on the nav line: number · category · year
+  document.getElementById("pv-num").textContent = "";   // E5 (Yanzi): no project numbers
+  document.getElementById("pv-cat").textContent = p.type ? p.type[L] : "";   // keeps its own capitals (UI/UX)
   document.getElementById("pv-yr").textContent = p.year;
-  document.getElementById("pv-name").textContent = p[L];   // level 1 (with the cover)
-  document.getElementById("pv-sum").textContent = p.summary ? p.summary[L] : "";
+  document.getElementById("pv-name").textContent = p[L];
+  document.getElementById("pv-tags").textContent = (p.tags || []).map((t) => t[L]).join(L === "zh" ? "、" : ", ");
+  document.getElementById("pv-sum").textContent = p.summary && !/placeholder|占位/i.test(p.summary[L]) ? p.summary[L] : "";   // E5 UX: no placeholder copy in the panel
+  // Client and Special thanks (Yanzi) — always shown on every project; "—" until filled in
+  const f = p.facts || {};
+  const facts = [
+    [L === "zh" ? "客户" : "Client", (f.client && f.client[L]) || "—"],
+    [L === "zh" ? "特别感谢" : "Special thanks", (f.thanks && f.thanks[L]) || "—"],
+  ];
+  document.getElementById("pv-facts").innerHTML = facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  // every image / video of the project, one under the other (no separate cover, no dots)
+  // media with a layout size: "full" (default), "half" (2 per row) or "third" (3 per row),
+  // taken from the gallery entry's `size`; consecutive halves / thirds share one row
+  const sizeOf = {};
+  (p.gallery || []).forEach((g) => { if (g.src && g.size) sizeOf[g.src] = g.size; });
+  (p.panelSolo || []).forEach((m) => { delete sizeOf[m]; });   // E5 (Yanzi: 不可以不规则): pairs that don't match stand alone in the panel
+  // panel order = the curated gallery order; preview / cover only add what the gallery lacks.
+  // E5 (Yanzi): a project can set its own panel order (`p.panel`), so the panel doesn't open
+  // on the same image as the case study — same calm layout, some photos in other places
+  const all = [...new Set([...(p.panel || []), ...(p.gallery || []).map((g) => g.src), ...(p.preview || []), p.cover].filter(Boolean))]
+    .filter((m) => !(p.panelHide || []).includes(m));   // Yanzi: some photos stay on the case study only
+  const hue = HUES[i % HUES.length];
+  const fig = (m) => {
+    const crop = CROP[m.split("/").pop()];
+    const style = crop ? ` style="aspect-ratio:${crop.toFixed(4)};--a:${crop.toFixed(4)}"` : "";
+    return /\.(mp4|webm)$/i.test(m)
+      ? `<figure class="pv-fig" style="aspect-ratio:${(crop || VR[m.split("/").pop()] || 16 / 9).toFixed(4)}"><video data-src="${m}" muted loop playsinline preload="none"></video></figure>`
+      : `<figure class="pv-fig"${style}><img src="${m}" alt="" loading="lazy"></figure>`;
+  };
+  const rows = [];
+  // curated layout (Yanzi): each video sits alone, full width; images that belong together are
+  // set side by side by the project's own `size` ("half" = pair, "third" = trio); the rest full width
+  const isVid = (m) => /\.(mp4|webm)$/i.test(m);
+  all.forEach((m) => {
+    let size = !isVid(m) && (sizeOf[m] === "half" || sizeOf[m] === "third") ? sizeOf[m] : "full";
+    const last = rows[rows.length - 1], max = size === "half" ? 2 : 3;
+    if (size !== "full" && last && last.size === size && last.items.length < max) last.items.push(m);
+    else rows.push({ size, items: [m] });
+  });
+  // each row is one unit for the focus effect (it grows + turns to colour as a whole)
+  const galleryHTML = all.length
+    ? rows.map((r) => `<div class="pv-row pv-row-${r.size}">${r.items.map(fig).join("")}</div>`).join("")
+    : [5 / 4, 16 / 10, 4 / 5].map((ar) =>
+        `<div class="pv-row pv-row-full"><figure class="pv-fig pv-ph" style="aspect-ratio:${ar};--hue:${hue}"></figure></div>`).join("");   // placeholder project
+  // E5 perf (Yanzi: "点开会卡一下"): the images go in once the panel has slid in, not during the slide
+  const gal = document.getElementById("pv-gallery");
+  gal.innerHTML = "";
+  clearTimeout(pvFillT);
+  pvFillT = setTimeout(() => { if (pvJ !== j) return; gal.innerHTML = galleryHTML; afterFill(); }, pvOpen ? 0 : 520);
   const href = `project.html?id=${p.id}${L === "zh" ? "&lang=zh" : ""}`;
-  document.getElementById("pv-title").href = href;
-  document.getElementById("pv-open").href = href;
-  document.getElementById("pv-dots").innerHTML = set.map((x, n) =>
-    `<button type="button" class="pv-dot${n === k ? " on" : ""}" data-j="${x.dataset.j}" aria-label="${n + 1} / ${set.length}"></button>`).join("");
+  document.getElementById("pv-more").href = href;
+  // E4: Next project (skips projects that have no images yet, same rule as the details page)
+  const nx = stepProject(1), nb = document.getElementById("pv-next");
+  nb.hidden = nx < 0;
+  if (nx >= 0) document.getElementById("pv-next-name").textContent = PROJECTS[+items[nx].dataset.i][L];
+  document.getElementById("pv-scroll").scrollTop = 0;
 }
+function afterFill() {
+  // side-by-side rows: give each image its real ratio so they share one height (no cropping)
+  document.querySelectorAll("#pv-gallery .pv-row-half img, #pv-gallery .pv-row-third img").forEach((img) => {
+    const set = () => { if (img.naturalWidth) img.parentElement.style.setProperty("--a", (img.naturalWidth / img.naturalHeight).toFixed(4)); };
+    if (img.complete) set(); else img.addEventListener("load", set, { once: true });
+  });
+  document.querySelectorAll("#pv-gallery video[data-src]").forEach((v) => pvVio.observe(v));
+  requestAnimationFrame(() => document.getElementById("pv-scroll").dispatchEvent(new Event("scroll")));
+}
+// a panel video downloads only when it scrolls near view, and pauses when it leaves
+let pvFillT = 0;
+const VR = { "rebirth-digital-resurrection.mp4": 1620 / 1080, "rebirth-elevator.mp4": 1536 / 1080, "rebirth-gallery-hall.mp4": 1612 / 1080 };
+const pvVio = new IntersectionObserver((es) => es.forEach((e) => {
+  const v = e.target;
+  if (e.isIntersecting) { if (!v.src) { v.src = v.dataset.src; v.preload = "auto"; } v.play().catch(() => {}); }
+  else if (v.src) v.pause();
+}), { root: document.getElementById("pv-scroll"), rootMargin: "100% 0px" });
 function openPreview(j) {
+  document.getElementById("h-hint")?.classList.add("done");   // E5: the "click any image" hint has done its job
   renderPreview(j);
   pvOpen = true; setHot(null);
   pv.setAttribute("aria-hidden", "false");
   reel.classList.add("is-previewing");
+  document.body.classList.add("previewing");   // E3: blur everything behind the panel
+  // E5 UX (keyboard / screen reader): focus moves into the panel, and back to where it came from on close
+  pvOpener = document.activeElement;
+  document.getElementById("pv-x").focus({ preventScroll: true });
 }
 function closePreview() {
   if (!pvOpen) return;
   pvOpen = false;
+  pv.querySelectorAll("video").forEach((v) => v.pause());
   pv.setAttribute("aria-hidden", "true");
   reel.classList.remove("is-previewing");
+  document.body.classList.remove("previewing");
+  if (pvOpener && pvOpener.isConnected && pv.contains(document.activeElement)) pvOpener.focus({ preventScroll: true });
+  pvOpener = null;
 }
+// Tab stays inside the open panel (it would otherwise walk through the blurred page behind it)
+addEventListener("keydown", (e) => {
+  if (!pvOpen || e.key !== "Tab") return;
+  const f = [...pv.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')].filter((x) => x.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && (document.activeElement === first || !pv.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (document.activeElement === last || !pv.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+});
 document.getElementById("pv-x").addEventListener("click", closePreview);
-document.getElementById("pv-dots").addEventListener("click", (e) => {
-  const t = e.target.closest(".pv-dot"); if (t) renderPreview(+t.dataset.j);
-});
-// click the cover → the project's next image, like turning a page
-document.getElementById("pv-cover").addEventListener("click", () => {
-  const set = imgsOf(pvI), k = set.indexOf(items[pvJ]);
-  renderPreview(+set[(k + 1) % set.length].dataset.j);
-});
+window.closeProjectPanel = closePreview;   // the index layer closes the panel when it opens (never both at once)
+document.getElementById("pv-veil").addEventListener("click", closePreview);
+// for the Work Index layer: open project i's panel (its first floating image)
+window.openProjectPanel = (i) => { if (PROJECTS[i] && PROJECTS[i].empty) return; const el = items.find((x) => +x.dataset.i === i); if (el) openPreview(+el.dataset.j); };
 const openFull = (e) => { e.preventDefault(); if (pvI >= 0) goToProject(pvI); };
-document.getElementById("pv-open").addEventListener("click", openFull);
-document.getElementById("pv-title").addEventListener("click", openFull);
+document.getElementById("pv-more").addEventListener("click", openFull);
+
+// ---------- E4: next project inside the panel (button at the end; ← → keys too, no extra UI) ----------
+function itemOf(k) {   // the floating image that opens project k; -1 if k has no images yet
+  const p = PROJECTS[k]; if (!p || p.empty || !((p.preview && p.preview[0]) || p.cover)) return -1;
+  const el = items.find((x) => +x.dataset.i === k); return el ? +el.dataset.j : -1;
+}
+function stepProject(d) {
+  for (let s = 1; s < N; s++) { const j = itemOf(((pvI + d * s) % N + N) % N); if (j >= 0) return j; }
+  return -1;
+}
+function goStep(d) {
+  const j = stepProject(d); if (j < 0) return;
+  const book = pv.querySelector(".pv-book");
+  book.classList.remove("swap"); void book.offsetWidth;
+  renderPreview(j);
+  book.classList.add("swap");
+}
+document.getElementById("pv-next").addEventListener("click", () => goStep(1));
+addEventListener("keydown", (e) => {
+  if (!pvOpen || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "ArrowRight") { e.preventDefault(); goStep(1); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); goStep(-1); }
+});
 pv.addEventListener("pointerdown", (e) => e.stopPropagation());   // clicks inside the panel don't drive the scene
 pv.addEventListener("pointermove", (e) => { e.stopPropagation(); setHot(null); });
 addEventListener("keydown", (e) => { if (e.key === "Escape") closePreview(); });
@@ -291,8 +429,9 @@ function goToProject(i) {
   const url = new URL("project.html", location.href);
   url.searchParams.set("id", PROJECTS[i].id);
   if (lang() === "zh") url.searchParams.set("lang", "zh");
-  document.body.classList.add("leaving");
-  setTimeout(() => { location.href = url; }, reduce ? 0 : 380);
+  // E5 (Yanzi "点完会卡着"): go straight away — the old 0.35s fade-out + 0.38s wait left the panel
+  // alone on a white page
+  location.href = url;
 }
 { const id = new URLSearchParams(location.search).get("project"); if (id) location.replace(`project.html?id=${encodeURIComponent(id)}`); }
 
@@ -304,8 +443,69 @@ document.getElementById("home").classList.add("refined");
 // …and reset that saved choice, so E and E1 also stop opening in the old Original look
 try { localStorage.setItem("homeStyle", "refined"); } catch (e) {}
 
+// ---------- focus scroll (option A, after obys Odin's Crow) — default in E3 ----------
+// In the scrolling panel every image is the same width and always in colour; while scrolling,
+// the one passing the middle grows a little (6%).
+if (new URLSearchParams(location.search).get("focus") !== "0") {   // default on in E3 (Yanzi: 只要效果); ?focus=0 turns it off
+  document.body.classList.add("focus-mode");
+  const scroller = document.getElementById("pv-scroll");
+  let raf = 0;
+  const GAP = 10;   // visible gap between rows = the CSS gap (10px), so nothing drifts
+  const focusPass = () => {
+    raf = 0;
+    const r = scroller.getBoundingClientRect();
+    const rows = [...scroller.querySelectorAll(".pv-row")];
+    if (!rows.length) return;
+    const first = rows[0], st = scroller.scrollTop;
+    // the focus line starts on the first image (so it opens full size, in colour) and
+    // eases to the panel's middle over the first ~half screen of scrolling
+    const firstC = first.offsetTop + first.offsetHeight / 2 - st;           // first row centre, in scroller px
+    const settle = Math.min(1, st / (r.height * 0.5));
+    const focusY = (1 - settle) * firstC + settle * (r.height / 2);
+    // rows stack from the top with a constant visible gap: shrinking pulls the rest up
+    let y = first.offsetTop;   // visible top of the next row (layout px)
+    rows.forEach((row) => {
+      const h = row.offsetHeight, top = row.offsetTop;
+      const c = (y + h / 2) - st;                                            // approx. visible centre
+      const t = Math.max(0, 1 - Math.abs(c - focusY) / (r.height * 0.55));
+      const e = t * t * (3 - 2 * t);
+      // E3 (Yanzi): every image is the same size (full text-column width); only while scrolling
+      // does the one passing the middle grow a little. At the top nothing is enlarged.
+      // centred panel: a gentler 3% so a growing row stays inside the card's 16px margin
+      const sc = 1 + (document.body.classList.contains("pv-center") ? 0.03 : 0.06) * e * settle;
+      const ty = (y - top) - (1 - sc) * h / 2;                               // visible top lands on y
+      row.style.transform = `translateY(${ty.toFixed(1)}px) scale(${sc.toFixed(4)})`;
+      row.style.filter = "none";   // Yanzi: images in the panel are always in colour (no grey → colour)
+      y += h * sc + GAP;
+    });
+  };
+  const ask = () => { if (!raf) raf = requestAnimationFrame(focusPass); };
+  scroller.addEventListener("scroll", ask, { passive: true });
+  addEventListener("resize", ask);
+  new MutationObserver(() => setTimeout(ask, 50)).observe(document.getElementById("pv-gallery"), { childList: true });
+  document.getElementById("pv-gallery").addEventListener("load", ask, true);
+}
+
+// nav trial (Yanzi): ?nav=index → bar-style nav only while the index is open (version A);
+// ?nav=all → bar-style nav everywhere (version B). Default: the centred-logo nav.
+// Default is now version B (Yanzi, 2026-10-25); version A kept: ?nav=index · old centred nav: ?nav=centre
+{ const q = new URLSearchParams(location.search).get("nav");
+  const n = q === "index" || q === "centre" ? q : "all";
+  if (n !== "centre") document.body.classList.add("navbar-" + n);
+  // keep the choice when moving between work and index
+  document.querySelectorAll('.h-nav a[href^="./"]').forEach((a) => { if (q) a.href = a.getAttribute("href").replace("./", "./?nav=" + q + "&").replace(/[?&]$/, ""); });
+}
+
+// panel layout: centred like alanxu.info (default, Yanzi 2026-10-25) · ?pvl=side = the right-half panel
+// Yanzi: keep her own right-half panel format; the centred alanxu card stays at ?pvl=center
+if (new URLSearchParams(location.search).get("pvl") === "center") document.body.classList.add("pv-center");
+
+// footer trial: ?foot=dark → white text on a black strip (to compare with the default white one)
+if (new URLSearchParams(location.search).get("foot") === "dark") document.body.classList.add("foot-dark");
+
 // ?pv=<image number> opens the preview straight away (for screenshots / sharing one project)
-{ const q = new URLSearchParams(location.search).get("pv"); if (q !== null && items[+q]) setTimeout(() => openPreview(+q), 300); }
+{ const qs = new URLSearchParams(location.search), q = qs.get("pv"), sy = +qs.get("pvscroll") || 0;
+  if (q !== null && items[+q]) setTimeout(() => { openPreview(+q); if (sy) setTimeout(() => { document.getElementById("pv-scroll").scrollTop = sy; }, 400); }, 300); }   // ?pvscroll=px (screenshots)
 
 requestAnimationFrame(tick);
 })();

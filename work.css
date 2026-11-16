@@ -1,0 +1,231 @@
+/* E3 Work Index — a white layer over the homepage; three-part grid after tomorrow-happens.studio
+   (proportions measured from their page at 2000px wide):
+   left 3.5–17% categories · middle 20.6–62.8% list · right 66.4–92.8% small black square */
+.wi-layer {
+  position: fixed; left: 0; right: 0; top: 96px; bottom: 44px; z-index: 3300;
+  background: #fff; overflow: auto; opacity: 0; pointer-events: none;
+  transition: opacity .4s cubic-bezier(.2,.8,.2,1);
+}
+.wi-layer[aria-hidden="false"] { opacity: 1; pointer-events: auto; }
+body.indexing .h-reel { visibility: hidden; }
+body.indexing .h-tip, body.indexing .h-cursor { opacity: 0 !important; }
+
+.wi {
+  position: relative; min-height: 100%;
+  display: grid; grid-template-columns: 13.5% 42.2%; column-gap: 3.6%;
+  padding: 40px 0 40px 3.5%; align-items: start;
+  --ui: 400 14px/1.25 "Helvetica Neue", Helvetica, Arial, "PingFang SC", sans-serif;
+}
+/* left: categories, each with a hairline above; the selected one black with a black line */
+.wi-cats { display: grid; }
+.wi-cat {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 8px 0 22px; border: 0; border-top: 1px solid #dcdcdc; background: none;
+  font: var(--ui); color: #a8a8a8; text-align: left; cursor: pointer; transition: color .2s;
+}
+.wi-cat:hover { color: #000; }
+.wi-cat.on { color: #000; border-top-color: #000; }
+.wi-cat-n { margin-left: 8px; }
+
+/* middle: the list — tight rows, number · name · year; note + View on hover */
+.wi-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid #ececec; }
+.wi-row { border-top: 1px solid transparent; }
+.wi-row:first-child { border-top: 0; }
+.wi-row.on { border-top: 1px solid #000; }
+.wi-link {
+  width: 100%; display: grid; grid-template-columns: 6.5% minmax(0, 1fr) minmax(0, 1fr) 11% 6%;
+  align-items: baseline; column-gap: 12px; padding: 3px 0 4px; margin: 0;
+  border: 0; background: none; text-align: left; cursor: pointer;
+  font: var(--ui); color: #000; transition: color .2s;
+}
+.wi-link:disabled { cursor: default; }
+.wi-n, .wi-y { font-variant-numeric: tabular-nums; }
+.wi-y { text-align: right; }
+.wi-note, .wi-go { opacity: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity .2s; }
+.wi-list.is-hovering .wi-link { color: #c9c9c9; }
+.wi-list.is-hovering .wi-row.on .wi-link { color: #000; }
+.wi-row.on .wi-note, .wi-row.on .wi-go { opacity: 1; }
+
+/* right: a small black square; the image sits inside it with black around (a frame, like theirs) */
+.wi-preview {
+  position: absolute; left: 66.4%; top: 40px; margin: 0;
+  width: 26.4%; aspect-ratio: 1 / 1; background: #000;
+  display: grid; place-items: center; opacity: 0; pointer-events: none;
+  transition: opacity .2s, top .35s cubic-bezier(.2,.8,.2,1);
+}
+.wi-preview.on { opacity: 1; }
+.wi-preview > * { width: 80%; height: auto; max-height: 80%; object-fit: contain; display: block; }
+
+@media (max-width: 900px) {
+  .wi-layer { top: 100px; }
+  .wi { grid-template-columns: 1fr; padding: 24px 16px; row-gap: 24px; }
+  .wi-cats { grid-template-columns: repeat(3, 1fr); column-gap: 12px; }
+  .wi-cat { padding-bottom: 10px; font-size: 13px; }
+  .wi-preview, .wi-note { display: none; }
+  .wi-link { grid-template-columns: 30px minmax(0, 1fr) 56px 40px; }
+}
+
+/* ===== Index v5 — large typography (after experiment.obys.agency/about), on our three-part base =====
+   left categories · narrow list (number · name / year, a line every 4 rows) · small thumbnail beside
+   the hovered row · huge staggered type filling the rest, swapping to the hovered project's name.
+   The previous index (v4) stays at ?ix=v4. */
+body:not(.ix-v4) .wi { grid-template-columns: 13.5% 24% minmax(0, 1fr); column-gap: 3%; padding-right: var(--m, 24px); }
+body:not(.ix-v4) .wi-link { grid-template-columns: 12% minmax(0, 1fr) 0 0 0; }
+body:not(.ix-v4) .wi-note, body:not(.ix-v4) .wi-go, body:not(.ix-v4) .wi-y { display: none; }
+.wi-slash { color: inherit; }
+body.ix-v4 .wi-slash { display: none; }
+body:not(.ix-v4) .wi-row:nth-child(4n + 1) { border-top: 1px solid #e4e4e4; }
+body:not(.ix-v4) .wi-row.on { border-top: 1px solid #000; }
+body:not(.ix-v4) .wi-preview { width: 150px; aspect-ratio: 4 / 3; background: #000; }
+body:not(.ix-v4) .wi-preview > * { width: 100%; height: 100%; max-height: none; object-fit: cover; }
+.wi-big { display: none; }
+body:not(.ix-v4) .wi-big {
+  display: block; grid-column: 3; align-self: start; margin-top: -8px;
+  font: 500 var(--big, 120px)/.9 "Helvetica Neue", Helvetica, Arial, "PingFang SC", sans-serif;
+  letter-spacing: -.035em; text-transform: uppercase; color: #000; pointer-events: none;
+}
+.wi-big-line { display: flex; overflow: hidden; padding-bottom: .04em; }
+.wi-big-line.r { justify-content: flex-end; }
+.wi-big-line > span { white-space: nowrap; }
+.wi-big-line i { display: inline-block; font-style: normal; transform: translateY(105%); animation: wi-rise .55s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes wi-rise { to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .wi-big-line i { animation: none; transform: none; } }
+@media (max-width: 900px) {
+  body:not(.ix-v4) .wi { grid-template-columns: 1fr; }
+  body:not(.ix-v4) .wi-big { grid-column: 1; grid-row: 1; }
+}
+/* a column of its own for the small thumbnail, so it never covers the big type */
+body:not(.ix-v4) .wi { grid-template-columns: 13.5% 24% 150px minmax(0, 1fr); column-gap: 2.4%; }
+body:not(.ix-v4) .wi-big { grid-column: 4; }
+
+/* ===== Index v6 — the essence of experiment.obys.agency/about: ONE shared grid =====
+   R = 20px. A list row = R; a big-type line = 4R = 80px; hairlines run the full page width every 4R,
+   so the small list and the huge statement sit on the same lines. One typeface, two extreme sizes
+   (13px / ≤88px). The statement stays still; hover only turns the row black + shows a small thumbnail.
+   Earlier versions: ?ix=v5 (type swaps on hover) · ?ix=v4 (three parts + black square). */
+body.ix-v6 .wi {
+  --R: 20px;
+  display: grid; grid-template-columns: 25% 150px minmax(0, 1fr); column-gap: 24px;
+  grid-template-rows: var(--R) auto; padding: calc(var(--R) * 2) var(--m, 24px) 0;
+  min-height: 100%;
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--R) * 4 - 1px), #dedede calc(var(--R) * 4 - 1px), #dedede calc(var(--R) * 4));
+  background-position: 0 calc(var(--R) * 2); background-size: 100% calc(var(--R) * 4);
+  background-origin: border-box;
+}
+/* header line: "No.  All, Branding, Exhibition & Space, …" */
+body.ix-v6 .wi-cats {
+  grid-column: 1; grid-row: 1; display: flex; align-items: center; gap: 0; height: var(--R);
+  font: 400 13px/1 "Helvetica Neue", Helvetica, Arial, "PingFang SC", sans-serif; color: #a3a3a3; white-space: nowrap;
+}
+body.ix-v6 .wi-h-n { width: 12%; flex: none; }
+body.ix-v6 .wi-h-cats { overflow: hidden; text-overflow: ellipsis; }
+body.ix-v6 .wi-cat { display: inline; padding: 0; border: 0; font: inherit; color: #a3a3a3; }
+body.ix-v6 .wi-cat:hover { color: #000; }
+body.ix-v6 .wi-cat.on { color: #000; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+body.ix-v6 .wi-comma { color: #a3a3a3; }
+/* list: every row exactly R tall with its own hairline */
+body.ix-v6 .wi-list { grid-column: 1; grid-row: 2; width: auto; border: 0; }
+body.ix-v6 .wi-row, body.ix-v6 .wi-row:first-child, body.ix-v6 .wi-row:nth-child(4n + 1), body.ix-v6 .wi-row.on { border: 0; }
+body.ix-v6 .wi-link {
+  grid-template-columns: 12% minmax(0, 1fr) 0 0 0; column-gap: 0;
+  height: var(--R); padding: 0; align-items: center; box-shadow: inset 0 -1px 0 #ececec;
+  font-size: 13px; line-height: 1;
+}
+body.ix-v6 .wi-row.on .wi-link { box-shadow: inset 0 -1px 0 #000; }
+body.ix-v6 .wi-list.is-hovering .wi-link { color: #cfcfcf; }
+body.ix-v6 .wi-list.is-hovering .wi-row.on .wi-link { color: #000; }
+/* small thumbnail in its own column, beside the hovered row */
+body.ix-v6 .wi-preview { position: absolute; width: 150px; aspect-ratio: 4 / 3; background: #000; left: 0; }
+body.ix-v6 .wi-preview > * { width: 100%; height: 100%; max-height: none; object-fit: cover; }
+/* the statement: lines of exactly 4R, each starting on a grid column */
+body.ix-v6 .wi-big {
+  display: block; grid-column: 3; grid-row: 1 / span 2; align-self: start; margin-top: calc(var(--R) * -2);
+  font: 500 var(--big, 88px)/calc(var(--R) * 4) "Helvetica Neue", Helvetica, Arial, "PingFang SC", sans-serif;
+  letter-spacing: -.035em; text-transform: uppercase; pointer-events: none;
+}
+body.ix-v6 .wi-big-line { height: calc(var(--R) * 4); align-items: flex-end; padding: 0; overflow: hidden; justify-content: flex-start; }
+body.ix-v6 .wi-big-line > span { line-height: .86; padding-bottom: .02em; }
+body.ix-v6 .wi-big-line:nth-child(1) { padding-left: 0; }
+body.ix-v6 .wi-big-line:nth-child(2) { padding-left: 34%; }
+body.ix-v6 .wi-big-line:nth-child(3) { justify-content: flex-end; }
+body.ix-v6 .wi-big-line:nth-child(4) { padding-left: 17%; }
+body.ix-v6 .wi-big-line:nth-child(5) { justify-content: flex-end; }
+@media (max-width: 900px) {
+  body.ix-v6 .wi { grid-template-columns: 1fr; grid-template-rows: auto var(--R) auto; padding-top: var(--R); }
+  body.ix-v6 .wi-big { grid-column: 1; grid-row: 1; margin: 0 0 var(--R); }
+  body.ix-v6 .wi-cats { grid-row: 2; } body.ix-v6 .wi-list { grid-row: 3; }
+}
+body.ix-v6 .wi { background-position: 0 0; }   /* full-width lines at 80, 160, 240 … = big-type baselines + every 4th list row */
+
+/* ===== Index v7 — the project names ARE the large type (rethink, 2026-10-25) =====
+   10 rows share the height exactly; each row: small number · huge name · small category + year,
+   all on one baseline, a hairline under each row. Hover: that name black, all others very light,
+   a small colour image follows the mouse. Categories = one small line on top; non-matching rows
+   fade but keep their place. Earlier: ?ix=v6 · v5 · v4. */
+body.ix-v7 .wi {
+  display: block; padding: 0 var(--m, 24px); background: none;
+  --ui: 400 13px/1 "Helvetica Neue", Helvetica, Arial, "PingFang SC", sans-serif;
+}
+body.ix-v7 .wi-big { display: none; }
+body.ix-v7 .wi-cats {
+  display: flex; flex-wrap: wrap; align-items: center; height: 56px; padding-top: 6px;
+  font: var(--ui); color: #a3a3a3;
+}
+body.ix-v7 .wi-cat { display: inline; padding: 0; border: 0; background: none; font: inherit; color: #a3a3a3; cursor: pointer; }
+body.ix-v7 .wi-cat:hover, body.ix-v7 .wi-cat.on { color: #000; }
+body.ix-v7 .wi-cat.on { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+body.ix-v7 .wi-comma { margin-right: 4px; }
+body.ix-v7 .wi-list { width: 100%; border-top: 1px solid #000; }
+body.ix-v7 .wi-row, body.ix-v7 .wi-row:first-child, body.ix-v7 .wi-row.on { border: 0; border-bottom: 1px solid #000; }
+body.ix-v7 .wi-link {
+  display: grid; grid-template-columns: 6% minmax(0, 1fr) auto; align-items: baseline; column-gap: 0;
+  height: var(--rowH, 72px); padding: 0; overflow: hidden; color: #000;
+}
+body.ix-v7 .wi-n, body.ix-v7 .wi-meta { font: var(--ui); }
+body.ix-v7 .wi-name {
+  font: 500 var(--fs, 62px)/1 "Helvetica Neue", Helvetica, Arial, "PingFang SC", sans-serif;
+  letter-spacing: -.04em; white-space: nowrap; align-self: end; padding-bottom: calc(var(--rowH, 72px) * .06);
+}
+body.ix-v7 .wi-n, body.ix-v7 .wi-meta { align-self: end; padding-bottom: calc(var(--rowH, 72px) * .13); }
+body.ix-v7 .wi-meta { display: flex; gap: 32px; text-align: right; }
+body.ix-v7 .wi-cat-s { color: #6b6b6b; }
+body.ix-v7 .wi-y { width: 40px; }
+/* contrast: the hovered name black, everything else almost white */
+body.ix-v7 .wi-list.is-hovering .wi-link, body.ix-v7 .wi-list.is-hovering .wi-cat-s { color: #e2e2e2; }
+body.ix-v7 .wi-list.is-hovering .wi-row.on .wi-link, body.ix-v7 .wi-list.is-hovering .wi-row.on .wi-cat-s { color: #000; }
+body.ix-v7 .wi-row.is-off .wi-link, body.ix-v7 .wi-row.is-off .wi-cat-s { color: #e8e8e8; cursor: default; }
+body.ix-v7 .wi-link, body.ix-v7 .wi-cat-s { transition: color .25s; }
+/* small colour image that follows the mouse */
+body.ix-v7 .wi-preview {
+  position: absolute; left: 0; top: 0; width: 220px; aspect-ratio: auto; background: none;
+  display: block; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 2;
+}
+body.ix-v7 .wi-preview.on { opacity: 1; }
+body.ix-v7 .wi-preview > * { width: 100%; height: auto; max-height: none; display: block; }
+@media (max-width: 900px) {
+  body.ix-v7 .wi-meta { display: none; }
+  body.ix-v7 .wi-link { grid-template-columns: 10% minmax(0, 1fr); }
+  body.ix-v7 .wi-preview { display: none; }
+}
+
+/* ===== Index v4 refined (Yanzi + self-critique, 2026-10-25) =====
+   - "All" lines up with the logo (left margin = var(--m) = 24px)
+   - list longer: 20% → 74%
+   - preview smaller: a 18%-wide black square, right edge on the right margin (under "en / 中文")
+   - one rhythm: list row = 25px, each category = exactly 2 rows, so their lines meet the list's */
+body.ix-v4 .wi { --row: 25px; padding: 40px var(--m, 24px); grid-template-columns: calc(16% - var(--m, 24px)) 54%; column-gap: 4%; }
+body.ix-v4 .wi-cat { height: calc(var(--row) * 2); padding: 6px 0 0; align-items: flex-start; }
+body.ix-v4 .wi-link { height: var(--row); padding: 0; align-items: center; }
+body.ix-v4 .wi-preview { left: auto; right: var(--m, 24px); width: 18%; }
+/* hairlines drawn inside the row (no extra height) so every row is exactly 25px */
+body.ix-v4 .wi-row, body.ix-v4 .wi-row:first-child, body.ix-v4 .wi-row.on { border: 0; }
+body.ix-v4 .wi-row.on .wi-link { box-shadow: inset 0 1px 0 #000; }
+body.ix-v4 .wi-list { border-top: 1px solid #ececec; margin-top: -1px; }
+/* the index's top lines (above "All" and the list) sit where the panel's label-row line is: 48px under the nav line */
+body.ix-v4 .wi { padding-top: 47px; }
+body.ix-v4 .wi-list { margin-top: 0; }   /* list line exactly on the system's second line too */
+/* "View ↗" opens the case details page */
+.wi-go { cursor: pointer; }
+.wi-row.on .wi-go:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+/* (numbers stay in the index list — Yanzi 2026-11-02; removed only from tip, panel and case study) */

@@ -1,0 +1,136 @@
+/* E3 — About page, after experiment.obys.agency/about.
+   Same nav bar + line system as the details page (project.css): nav line at 96px,
+   label row 48px, so the second line sits where it does on every page. */
+
+.ab { padding: 0; }
+.ab-page { background: #fff; }
+
+/* label row = the site's second line */
+.ab-label {
+  display: flex; align-items: center; gap: 14px; height: 48px; margin: 0; padding: 0 var(--m);
+  border-bottom: 1px solid #000; font: 400 13px/1 var(--sans); color: #6b6b6b;
+}
+.ab-l-n { color: #000; font-weight: 500; }
+.ab-l-r { margin-left: auto; }
+
+/* ---------- big staggered statement on thin lines ---------- */
+.ab-big { margin: 0; padding-top: 40px; font-weight: 500; }
+.ab-big > span { display: block; }
+.ab-line {
+  display: block; position: relative; overflow: hidden; white-space: nowrap;
+  border-bottom: 1px solid #d4d4d4;
+  font: 500 var(--fs, 8vw)/.88 var(--sans); letter-spacing: -.045em; text-transform: uppercase;
+  padding: .06em 0 .02em;
+}
+html[data-lang="zh"] .ab-line { line-height: 1.04; letter-spacing: -.02em; padding: .04em 0 .02em; }
+/* x = this line's step (set by about.js); the inner span carries the reveal */
+.ab-in {
+  display: inline-block; padding-left: calc(var(--m) + var(--x, 0px));
+  transform: translateY(120%); transition: transform 1.15s cubic-bezier(.16, 1, .3, 1);   /* expo-out, like the reference */
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.ab-big.in .ab-in { transform: none; }
+
+/* ---------- text + lists: label left (24px), content on the right half ---------- */
+.ab-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--m);
+  padding: 56px var(--m) 0;
+}
+.ab-k { margin: 0; font: 400 13px/1.4 var(--sans); color: #6b6b6b; }
+.ab-photo {
+  width: min(300px, 62%); aspect-ratio: 4 / 5; background: #eee;
+  position: sticky; top: 120px;
+}
+.ab-h { margin: 0 0 10px; font: 400 13px/1.4 var(--sans); color: #6b6b6b; }
+.ab-text { max-width: 34em; font: 400 16px/1.5 var(--sans); color: #111; }
+.ab-text p { margin: 0 0 1em; }
+html[data-lang="zh"] .ab-text { line-height: 1.8; }
+
+.ab-list { font: 400 15px/1.35 var(--sans); }
+.ab-li {
+  display: grid; grid-template-columns: 44px minmax(0, 1.5fr) minmax(0, 1.3fr) 84px; gap: 0 16px;
+  margin: 0; padding: 11px 0; border-bottom: 1px solid #e0e0e0;
+}
+.ab-li > span:first-child { color: #6b6b6b; }
+.ab-li > span:last-child { text-align: right; }
+.ab-li-h { padding-top: 0; font-size: 13px; color: #6b6b6b; border-bottom-color: #000; }
+.ab-li:not(.ab-li-h) { transition: padding-left .35s cubic-bezier(.2, .8, .2, 1); }
+.ab-li:not(.ab-li-h):hover { padding-left: 8px; }
+
+.ab-big-end { margin-top: 120px; }
+
+/* ---------- info row ---------- */
+.ab-info {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px var(--m);
+  padding: 48px var(--m) 72px; font: 400 15px/1.4 var(--sans);
+}
+.ab-info p { margin: 0; }
+.ab-info a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.ab-info a:hover { opacity: .5; }
+
+
+@media (max-width: 900px) {
+  .ab-row { grid-template-columns: 1fr; gap: 14px; padding-top: 40px; }
+  .ab-photo { position: static; width: 46%; }
+  .ab-li { grid-template-columns: 30px minmax(0, 1fr) 70px; }
+  .ab-li > span:nth-child(3) { grid-column: 2; grid-row: 2; color: #6b6b6b; }
+  .ab-li > span:last-child { grid-column: 3; grid-row: 1; }
+  .ab-info { grid-template-columns: 1fr 1fr; }
+  .ab-big-end { margin-top: 80px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ab-in { transform: none; transition: none; }
+  .h-mq-track { animation: none; }
+}
+
+/* drifting lines never cause a sideways scrollbar */
+.ab { overflow-x: clip; }
+
+/* live Los Angeles time in the label row */
+.ab-clock { font-variant-numeric: tabular-nums; }
+.ab-li > span:last-child { white-space: nowrap; }
+
+/* the page glides with its own smooth scroll (about.js), so the browser's must stay off */
+html { scroll-behavior: auto; }
+
+/* Skills: three columns, each a header on a black line + plain rows (same as the lists) */
+.ab-skills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 16px; font: 400 15px/1.35 var(--sans); }
+.ab-skills .ab-li-h { margin: 0; padding: 0 0 11px; border-bottom: 1px solid #000; display: block; }
+.ab-skills ul { margin: 0; padding: 0; list-style: none; }
+.ab-skills li { padding: 11px 0; border-bottom: 1px solid #e0e0e0; }
+@media (max-width: 900px) { .ab-skills { grid-template-columns: 1fr 1fr; gap: 28px 16px; } }
+
+/* ===== Yanzi: keep the reference's proportions (experiment.obys.agency/about) =====
+   lighter, tighter big type; the text starts right under the last line, tight 15px block on the
+   right half; a small black dot on the left instead of the photo box */
+.ab-line { font-weight: 400; letter-spacing: -.055em; line-height: .9; }
+html[data-lang="zh"] .ab-line { font-weight: 500; letter-spacing: -.02em; line-height: 1.04; }
+.ab-row-first { padding-top: 22px; }
+.ab-row-first .ab-h { margin-bottom: 2px; }
+.ab-text { font: 400 15px/1.22 var(--sans); color: #000; max-width: 32em; }
+.ab-text p { margin: 0 0 1.2em; }
+html[data-lang="zh"] .ab-text { line-height: 1.7; }
+.ab-dot { display: block; width: 12px; height: 12px; border-radius: 50%; background: #000; margin: 26px 0 0 50%; }
+
+/* four skill columns: Brand · Space & 3D · Motion · Tools */
+.ab-skills { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .ab-skills { grid-template-columns: 1fr 1fr; } }
+
+/* Tools column removed (Yanzi) — three skill columns */
+.ab-skills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .ab-skills { grid-template-columns: 1fr 1fr; } }
+
+/* AI & code column (Yanzi) — four skill columns again */
+.ab-skills { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .ab-skills { grid-template-columns: 1fr 1fr; } }
+
+/* performance (Yanzi: "非常卡"):
+   - the nav bar no longer blurs what scrolls under it (re-blurring huge type every frame was costly)
+   - only the language that is showing keeps GPU layers */
+.ab-page .bar { backdrop-filter: none; -webkit-backdrop-filter: none; background: #fff; }
+.ab-big > span:not([style*="none"]) .ab-in { will-change: transform; }
+.ab-page { animation: none; }
+
+/* Yanzi: the big statements are English in both languages — same weight, spacing and line height as the
+   English page (the Chinese-mode overrides above were for Chinese characters) */
+html[data-lang="zh"] .ab-line { font-weight: 400; letter-spacing: -.055em; line-height: .9; padding: .06em 0 .02em; }

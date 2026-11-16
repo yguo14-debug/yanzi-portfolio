@@ -1,0 +1,15 @@
+/* E7 — Playground field (field.js): the endless warping grid fills the scene between the label row and
+   the contact strip; the cloud's mask (soft top and bottom edges), dot cursor and name tip stay. */
+.cl .fd-canvas { position: absolute; inset: 0; display: block; touch-action: none; }
+.cl { touch-action: none; cursor: none; }
+.cl[data-down] { cursor: none; }
+@media (hover: none) { .cl { cursor: auto; } }
+
+/* two modes (modes.js): Grid = this canvas, Cloud = the floating track (cloud.js) */
+.cl .fd-canvas { transition: opacity .5s ease; }
+.cl:not([data-mode="grid"]) .fd-canvas { opacity: 0; pointer-events: none; }
+.cl:not([data-mode="cloud"]) .cl-track { display: none; }
+
+/* Yanzi 2026-11-13: the dot smaller — same size as the homepage's (8px, 14px over a piece) */
+.cl-cursor { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+.cl-cursor.big { width: 14px; height: 14px; margin: -7px 0 0 -7px; }

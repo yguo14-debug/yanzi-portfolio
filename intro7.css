@@ -1,0 +1,30 @@
+/* E7 — opening sequence after experiment.obys.agency (Yanzi 2026-11-13):
+   two black halves cover the screen; a title on the left and a 0–100 counter on the right sit on a
+   thin line that fills as the homepage loads; at 100 the halves split (top up, bottom down). */
+.in7 { position: fixed; inset: 0; z-index: 100; pointer-events: auto; }
+.in7.gone { display: none; }
+.in7-half { position: absolute; left: 0; right: 0; height: 50.5%; background: #000; transition: transform 1.1s cubic-bezier(.77, 0, .175, 1); }
+.in7-top { top: 0; }
+.in7-bot { bottom: 0; }
+.in7.open .in7-top { transform: translateY(-100%); }
+.in7.open .in7-bot { transform: translateY(100%); }
+
+.in7-row {
+  position: absolute; left: var(--m, 24px); right: var(--m, 24px); top: 50%; z-index: 2;
+  transform: translateY(-100%); padding-bottom: 8px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font: 400 13px/1 var(--sans, "Helvetica Neue", Helvetica, Arial, sans-serif); letter-spacing: -.01em; color: #fff;
+  opacity: 0; transition: opacity .5s ease;
+}
+.in7.on .in7-row { opacity: 1; }
+.in7-n { font-variant-numeric: tabular-nums; }
+.in7-line {
+  position: absolute; left: var(--m, 24px); right: var(--m, 24px); top: 50%; z-index: 2; height: 1px;
+  background: rgba(255, 255, 255, .3); overflow: hidden; opacity: 0; transition: opacity .5s ease;
+}
+.in7.on .in7-line { opacity: 1; }
+.in7-fill { position: absolute; inset: 0 auto 0 0; width: 0; background: #fff; }
+/* the text and line leave just before the halves split */
+.in7.done .in7-row, .in7.done .in7-line { opacity: 0; transition: opacity .35s ease; }
+
+@media (prefers-reduced-motion: reduce) { .in7 { display: none; } }

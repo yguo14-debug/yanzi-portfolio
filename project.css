@@ -125,3 +125,319 @@ html[data-lang="zh"] .pj-summary { line-height: 1.6; }
   .pj-sec, .pj-brief-cols, .pj-step { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { body { animation: none; } }
+
+/* ===== E3 line system on the details page (Yanzi: every page starts from the same line) =====
+   nav = the homepage's version-B bar (96px, logo left 46px, work · about · index centred,
+   playground + en/中文 right); the content starts with a 48px label row whose line is the
+   site's second line; white page, one typeface. */
+:root { --g: #fff; }
+body { background: #fff; }
+.bar {
+  height: 96px; padding: 0 var(--m); background: rgba(255,255,255,.92);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid #000; grid-template-columns: 1fr auto 1fr;
+}
+.bar-logo { height: 46px; transform: none; }
+.bar-nav { gap: 8px; }
+.bar .pill {
+  padding: 6px 14px 7px; border-radius: 6px; font: 400 17px/1 var(--sans);
+  text-transform: none; letter-spacing: -.01em;
+}
+.bar .pill.is-current, .bar .pill:hover { background: #000; color: #fff; }
+.bar-right { gap: 28px; font: 500 20px/1 var(--sans); letter-spacing: -.01em; }
+.bar-right .lang-switch button { font: inherit; text-transform: none; }
+.bar-play:hover { opacity: .5; }
+/* first line of content = the system's second line */
+.pj-head { padding: 0 0 28px; }
+.pj-count {
+  display: flex; align-items: center; gap: 14px; height: 48px; margin: 0 calc(var(--m) * -1) 32px;
+  padding: 0 var(--m); border-bottom: 1px solid #000;
+  font: 400 13px/1 var(--sans); letter-spacing: 0; color: #6b6b6b;
+}
+.pj-c-n { color: #000; font-weight: 500; }
+.pj-c-cat { text-transform: lowercase; }
+.pj-c-y { margin-left: auto; }
+@media (max-width: 700px) {
+  .bar { height: 68px; } .bar-logo { height: 34px; } .bar .pill { font-size: 14px; padding: 5px 10px; }
+  .bar-right { font-size: 15px; gap: 12px; } .bar-play { display: none; }
+}
+
+/* ===== Details page in the panel's language (E3, 2026-10-25) =====
+   one typeface, the panel's scale: title 40px · grey categories 13px · summary 16px · labels 13px grey;
+   no uppercase, no mono, no pill boxes; images keep their own ratio on white. */
+.pj-title { display: block; font: 500 40px/1.02 var(--sans); letter-spacing: -.025em; text-transform: none; }
+.pj-tagline { display: block; margin-top: 6px; font: 400 24px/1.2 var(--sans); letter-spacing: -.01em; color: #9a9a9a; }
+.pj-tagline:empty { display: none; }
+.pj-tags { margin: 8px 0 0; max-width: none; display: block; font: 400 13px/1.4 var(--sans); color: #6b6b6b; }
+.pj-tags li { display: inline; }
+.pj-head { padding-bottom: 32px; }
+.pj-hero { aspect-ratio: auto; background: none; }
+.pj-hero > * { height: auto; }
+.pj-intro { padding: 32px 0 40px; max-width: 34em; }
+.pj-summary { font: 400 16px/1.5 var(--sans); letter-spacing: 0; color: #222; }
+.pj-sec { padding: 32px 0 48px; }
+.pj-sec-h, .pj-k, .pj-step-n, .pj-credits dt, .pj-detail h3 {
+  font: 400 13px/1.2 var(--sans); text-transform: none; letter-spacing: 0; color: #6b6b6b;
+}
+.pj-brief-cols h3, .pj-step h3 { font: 500 15px/1.3 var(--sans); }
+.pj-brief-cols p, .pj-step p { font-size: 14px; line-height: 1.55; color: #333; }
+.pj-step-media figure { background: #f0f0f0; }
+.pj-gallery figure { background: none; }
+.pj-gallery { gap: 16px; }
+.pj-credits h2 { font: 400 13px/1.2 var(--sans); text-transform: none; color: #6b6b6b; }
+.pj-card .t { font: 500 24px/1.1 var(--sans); text-transform: none; letter-spacing: -.02em; }
+.pj-card .img { background: #f0f0f0; }
+.ft { font: 400 13px/1 var(--sans); text-transform: none; letter-spacing: 0; }
+/* videos with baked-in black bars: figure = real picture ratio; video covers it with a 3% safety
+   overscan so no sliver of the bar is left at either edge */
+.pj-gallery figure.crop { overflow: hidden; }
+.pj-gallery figure.crop > video { width: 100%; height: 100%; object-fit: cover; transform: scale(1.03); }
+.pj-hero.crop { overflow: hidden; } .pj-hero.crop > video { width: 100%; height: 100%; object-fit: cover; transform: scale(1.03); }
+/* pairs share one height, each image keeps its ratio, 16px gap (same as the panel) */
+.pj-gallery { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.pj-row { display: flex; gap: 16px; }
+.pj-row figure { flex: var(--a, 1.5) 1 0; aspect-ratio: var(--a, 1.5); min-width: 0; }
+.pj-row figure > * { width: 100%; height: 100%; object-fit: cover; }
+/* Yanzi: the title area goes back to the big uppercase title (previous version) */
+.pj-title { display: grid; font: 500 clamp(44px, 6vw, 96px)/.98 var(--sans); letter-spacing: -.035em; text-transform: uppercase; }
+.pj-tagline { display: block; margin-top: 0; font: inherit; letter-spacing: inherit; color: #9a9a9a; }
+.pj-tagline:empty { display: none; }
+.pj-tags { margin-top: 20px; }
+/* Yanzi: tags back to the outlined boxes (previous version) */
+.pj-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 24px 0 0; max-width: 60%; font: inherit; color: inherit; }
+.pj-tags li { display: list-item; list-style: none; }
+.pj-tags .pill { font: 400 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .04em; padding: 6px 10px; border-radius: 4px; color: #000; }
+/* Outcome fix: fr tracks must be allowed to shrink below the videos' native 1920px width,
+   otherwise the gallery spills past the right edge */
+.pj-sec { grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); }
+.pj-sec > * { min-width: 0; }
+.pj-gallery figure, .pj-hero { max-width: 100%; }
+/* Yanzi: summary back to the previous, larger version */
+.pj-intro { padding: 32px 0 48px; max-width: 50%; }
+.pj-summary { font: 400 clamp(22px, 2vw, 30px)/1.25 var(--sans); letter-spacing: -.01em; color: #000; }
+/* optical left alignment (Yanzi): every visible left edge on the 24px margin —
+   logo ink starts 47/384 of its height in; the big title's first letter has ~0.076em side bearing */
+.bar-logo { margin-left: calc(-46px * 47 / 384); }
+.pj-title { margin-left: -0.076em; }
+@media (max-width: 700px) { .bar-logo { margin-left: calc(-34px * 47 / 384); } }
+
+/* ===== E4 project layout (after gracejhwang.com/pioneer-works, 2026-11-01) =====
+   label row → full-width hero → info column (1/4) beside the first images (3/4) →
+   the rest of the images full width → Process (label left, images right).
+   Info column: small black labels, grey text under them; a short black rule starts each group. */
+.pj4 .pj-count { margin-bottom: 16px; }
+.pj4 .pj-hero { margin-bottom: 16px; }
+.pj4-intro {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 16px var(--m);
+  align-items: start; margin-bottom: 16px;
+}
+.pj4-info { font: 400 15px/1.4 var(--sans); }
+html[data-lang="zh"] .pj4-info { line-height: 1.7; }
+.pj4-b { margin-bottom: 22px; }
+.pj4-info > .pj4-b:first-child, .pj4-rule { border-top: 1px solid #000; padding-top: 8px; }
+.pj4-title { margin: 0; font: 500 15px/1.4 var(--sans); letter-spacing: 0; text-transform: none; }
+.pj4-k { margin: 0; font: 500 15px/1.4 var(--sans); color: #000; }
+.pj4-v { margin: 0; color: #6b6b6b; }
+.pj4-v:empty { display: none; }
+.pj4-text p { margin: 0 0 1.2em; }
+.pj4-text .pj4-k { margin-top: .2em; }
+.pj4-credits { margin: 0; color: #6b6b6b; }
+.pj4-credits div { margin: 0; }
+.pj4-credits dt { display: inline; color: #000; font: inherit; }
+.pj4-credits dt::after { content: " · "; color: #6b6b6b; }
+.pj4-credits dd { display: inline; margin: 0; }
+/* images on the right: same 16px rhythm as the gallery; pairs share one height */
+.pj4-lead { display: grid; gap: 16px; }
+.pj4-lead figure { margin: 0; }
+.pj4-lead figure > * { display: block; width: 100%; height: auto; }
+.pj4-lead figure.crop > video { height: 100%; object-fit: cover; transform: scale(1.03); }
+.pj4-lead .pj-row figure > * { height: 100%; object-fit: cover; }
+/* rest of the images: full width */
+.pj4 .pj-gallery { padding: 0; }
+/* Process: no full-width line — a short rule over the label only (as in the info column) */
+.pj4 .pj-sec { border-top: 0; padding: 56px 0 48px; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); }
+.pj4 .pj-sec-h { border-top: 1px solid #000; padding-top: 8px; font: 500 15px/1.4 var(--sans); color: #000; align-self: start; }
+.pj4 .pj-step-n { color: #6b6b6b; }
+@media (max-width: 900px) {
+  .pj4-intro, .pj4 .pj-sec { grid-template-columns: 1fr; }
+}
+
+/* E4 round 2 (Yanzi): big title back above the hero; Process folded into the same 1/4 · 3/4 rows */
+.pj4 .pj-head { padding: 0 0 32px; }
+.pj4 .pj-count { margin-bottom: 32px; }
+.pj4 #pj-facts .pj4-b:last-child { margin-bottom: 22px; }
+.pj4-process { display: grid; gap: 16px; margin-top: 16px; }
+.pj4-step { margin: 0; }
+.pj4-step .pj4-info { padding-top: 8px; }
+.pj4-sec { margin-bottom: 22px; }
+.pj4-n { color: #6b6b6b; margin-right: .6em; font-variant-numeric: tabular-nums; }
+.pj4-step .pj4-v { margin-top: 2px; }
+.pj4-step-media { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pj4-step-media figure { margin: 0; aspect-ratio: 4 / 3; background: #f0f0f0; overflow: hidden; }
+.pj4-step-media figure > * { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pj4 .pj-more-work { margin-top: 64px; }
+/* Yanzi: E3's large summary under the hero, with the full-width line under it;
+   that line now opens the info column (so Client has no short rule of its own) */
+.pj4 .pj4-sum { max-width: none; padding: 32px 0 48px; border-bottom: 1px solid #000; }
+.pj4 .pj4-sum .pj-summary { max-width: 50%; margin: 0; }
+.pj4 .pj4-sum + .pj4-intro { margin-top: 0; padding-top: 12px; }
+@media (max-width: 900px) { .pj4 .pj4-sum .pj-summary { max-width: none; } }
+.pj4-text > .pj4-k:first-child { margin-top: 0; }
+.pj4-text .pj4-k { color: #000; }
+
+/* E4 round 3 (critique): the whole introduction sits above the hero — big title, then tags on the
+   left half and the summary on the right half. Below the hero only the quiet system: short 1/4 rules,
+   small text, no full-width line until Next. */
+.pj4 .pj-head { padding-bottom: 40px; }
+.pj4-headrow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--m); align-items: start; margin-top: 24px; }
+.pj4-headrow .pj-tags { margin: 0; max-width: none; }
+.pj4-headrow .pj-summary { margin: 0; }
+.pj4 .pj4-intro { margin-top: 24px; }
+@media (max-width: 900px) { .pj4-headrow { grid-template-columns: 1fr; gap: 20px; } }
+/* alignment fix (Yanzi "要对齐"): the videos are scaled 3% to hide their baked-in black bars —
+   the figure must clip them, or they spill past the image column's edges */
+.pj4-lead figure, .pj4 .pj-gallery figure, .pj4 .pj-hero { overflow: hidden; }
+/* Yanzi "这个地方不对": the tags | summary row now uses the same 1/4 | 3/4 grid as everything below —
+   tags in the info column (above Client), summary on the images' left edge — so the head lines up
+   with the page instead of splitting at an unrelated 50% */
+.pj4-headrow { grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 16px var(--m); }
+.pj4-headrow .pj-summary { max-width: 30em; }
+.pj4-headrow .pj-tags { gap: 6px; }
+@media (max-width: 900px) { .pj4-headrow { grid-template-columns: 1fr; } }
+/* better head (Yanzi): title → tags on one line (the strip under the title) → the summary alone on
+   the 3/4 line, the images' left edge. No Year in the info column (the label row already shows it). */
+.pj4-headrow { row-gap: 0; }
+.pj4-headrow .pj-tags { grid-column: 1 / -1; flex-wrap: wrap; }
+.pj4-headrow .pj-summary { grid-column: 2; margin-top: 40px; }
+@media (max-width: 900px) { .pj4-headrow .pj-summary { grid-column: 1; margin-top: 24px; } }
+/* head v3 (Yanzi "看起来不好看": the indented summary left a hole) — Client / Special thanks fill the
+   1/4 column beside the summary, top-aligned with its first line; the grid starts in the head */
+.pj4-headrow .pj4-hfacts { grid-column: 1; grid-row: 2; margin-top: 40px; display: grid; gap: 14px; align-content: start; padding-top: .35em; }
+.pj4-headrow .pj-summary { grid-row: 2; }
+.pj4-hfacts .pj4-b { margin: 0; border: 0; padding: 0; }
+/* the info column below now opens with Context (its own short rule) */
+@media (max-width: 900px) { .pj4-headrow .pj4-hfacts { grid-row: 3; margin-top: 24px; } }
+/* Yanzi: swap — the summary leads from the left edge under the title; Client / Special thanks sit
+   on the right as side notes, in the last quarter (page quarters: 1/4 · 2/4 · 3/4) */
+.pj4-headrow { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pj4-headrow .pj-summary { grid-column: 1 / span 3; grid-row: 2; max-width: 30em; }
+.pj4-headrow .pj4-hfacts { grid-column: 4; grid-row: 2; }
+@media (max-width: 900px) {
+  .pj4-headrow { grid-template-columns: 1fr; }
+  .pj4-headrow .pj-summary, .pj4-headrow .pj4-hfacts { grid-column: 1; }
+  .pj4-headrow .pj4-hfacts { grid-row: 3; }
+}
+
+/* E5: contact in the bar (playground moved into the nav pills) */
+.bar-contact:hover { opacity: .5; }
+/* E5 phone: the pills come back (they were hidden) — second row under logo + contact / language */
+@media (max-width: 700px) {
+  .bar { height: auto; grid-template-columns: 1fr auto; grid-template-rows: auto auto; row-gap: 12px; padding: 14px var(--m) 12px; }
+  .bar-brand { grid-column: 1; grid-row: 1; }
+  .bar-right { grid-column: 2; grid-row: 1; }
+  .bar-nav { display: flex; grid-column: 1 / -1; grid-row: 2; justify-self: start; gap: 6px; }
+}
+
+/* E5 (Yanzi): Client / Special thanks start exactly under "contact" in the bar.
+   project.js measures contact's left edge and sets --fx (wide screens only). */
+@media (min-width: 901px) { .pj4-headrow .pj4-hfacts { margin-left: var(--fx, 0px); } }
+
+/* E5: the label row shows number + year only (the category is already in the tags) */
+.pj-c-cat:empty { display: none; }
+
+/* E5: the project's wordmark in the title's place, left on the margin; letters as tall as the old
+   title's capitals. Static (Yanzi: the rolling looked odd). */
+.pj-head .pj5-logo { margin: 40px 0 0; --cap: calc(clamp(44px, 6vw, 96px) * .72); }
+.pj-head .pj5-logo > svg { display: block; width: calc(var(--cap) * 882 / 101); max-width: 100%; height: auto; color: #000; }
+
+/* E5 (Yanzi: "不要这个"): a project with its own logo drops the big type title — the logo is the title.
+   The h1 stays for screen readers. */
+.pj5-has-logo .pj-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; margin: 0; }
+.pj5-has-logo .pj4-headrow { margin-top: 32px; }
+
+/* E5 Process as small contact sheets (Yanzi: "放这些，但是就是小点"): white pages with a hairline
+   edge, tight gaps, n per row; the section starts on its own rule further down the page */
+.pj4-process:not(:empty) { margin-top: 0; gap: 24px; }   /* Yanzi: same 24px as hero → Context (the step itself adds the 24px) */
+.pj5-sheet { grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 0; align-items: start;
+  border-top: 1px solid #e2e2e2; border-left: 1px solid #e2e2e2; }   /* one sheet: shared hairlines, no gaps */
+.pj5-sheet figure { aspect-ratio: var(--r, auto); background: #fff; border-right: 1px solid #e2e2e2; border-bottom: 1px solid #e2e2e2; }
+.pj5-sheet figure > * { height: 100%; object-fit: contain; }   /* the wider framework pages sit centred in the same cell */
+@media (max-width: 900px) { .pj5-sheet { grid-template-columns: repeat(min(var(--cols, 4), 5), minmax(0, 1fr)); } }
+@media (max-width: 560px) { .pj5-sheet { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* E5 staggered gallery (after gracejhwang.com/pioneer-playlab): a 12-column grid; everything spans
+   the full width unless the data gives it columns (--col), and images sit at the top of their row */
+.pj4 #pj-gallery { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: start; }
+.pj4 #pj-gallery > * { grid-column: 1 / -1; }
+.pj4 #pj-gallery > .pj5-col { grid-column: var(--col); }
+@media (max-width: 700px) { .pj4 #pj-gallery > .pj5-col { grid-column: 1 / -1; } }
+/* "r34": full row, but starting on the page's ¼ | ¾ line (x = 390 at 1440) */
+.pj4 #pj-gallery > .pj5-col[style*="--col:r34"] { grid-column: 1 / -1; margin-left: calc((100% - var(--m)) / 4 + var(--m)); }
+@media (max-width: 700px) { .pj4 #pj-gallery > .pj5-col[style*="--col:r34"] { margin-left: 0; } }
+/* Process info block = the intro's: its rule sits on the sheet's top edge, same label/text spacing */
+.pj4-step aside.pj4-info { padding-top: 0; }
+.pj4-step aside.pj4-info .pj4-k, .pj4-step aside.pj4-info .pj4-text { margin: 0; }
+/* Yanzi "让视觉看起来一样": the white pages melted into the white page, so the gap above looked bigger
+   than 24px. The sheet now sits on a light grey ground (like her reference) and reads as one block
+   with a clear top edge, the same as a photo. */
+.pj5-sheet { background: #e4e4e4; gap: 4px; padding: 4px; border: 0; }
+.pj5-sheet figure { border: 0; }
+
+/* E5 UX: unwritten summaries are left out of the cards, so their empty line doesn't take space */
+.pj-card .s:empty { display: none; }
+/* a lazy video fills the shape its figure reserves */
+.pj4 .pj-gallery figure[style*="aspect-ratio"] > video, .pj4-lead figure[style*="aspect-ratio"] > video { width: 100%; height: 100%; object-fit: cover; }
+
+/* E5 (Yanzi "点完会卡着"): no fade-in on arrival — the page shows as soon as it is ready */
+body { animation: none; }
+
+/* Yanzi's copy: several paragraphs per block, bold stage names, Process subtitle in the label's grey */
+.pj4-text p + p { margin-top: -0.4em; }
+.pj4-text strong { font-weight: 500; color: #000; }
+.pj5-sub { font-weight: 400; color: #6b6b6b; }
+
+/* Text hierarchy after gracejhwang.com (Yanzi): black label sits right on its text (no gap),
+   paragraphs are one empty line apart, a new section (Overview → Context) two lines apart */
+.pj4-text p { margin: 0; }
+.pj4-text p + p { margin-top: 1.4em; }
+.pj4-text .pj4-k { margin: 0; }
+.pj4-text p + .pj4-k { margin-top: 2.8em; }
+html[data-lang="zh"] .pj4-text p + p { margin-top: 1.2em; }
+
+/* Type sizes after gracejhwang.com (Yanzi: "参考她的字体… 字体要用我们自己的") — our Helvetica Neue,
+   her proportions: label 18px medium black; text 15.5px medium grey, line height 1.45.
+   Grey #888 instead of her #999 so the text stays readable on white. */
+.pj4-text .pj4-k { font-size: 18px; font-weight: 500; line-height: 1.4; color: #000; }
+.pj4-text p { font-size: 15.5px; font-weight: 500; line-height: 1.45; color: #888; }
+.pj4-text p + p { margin-top: 1.45em; }
+.pj4-text p + .pj4-k { margin-top: 2.6em; }
+.pj4-text strong { color: #555; }
+.pj5-sub { font-size: 18px; color: #888; font-weight: 500; }
+html[data-lang="zh"] .pj4-text p { line-height: 1.7; }
+html[data-lang="zh"] .pj4-text p + p { margin-top: 1.2em; }
+/* Yanzi: a little air between the label and its first paragraph */
+.pj4-text .pj4-k + p { margin-top: 8px; }
+/* E5: no project number in the label row — the year stays on the right */
+.pj-count .pj-c-y { margin-left: auto; }
+
+/* E6 (Yanzi 2026-11-02): the case-study title = the About page's big type — capitals, light
+   (400), tight tracking, line-height .9, large */
+.pj-title { font: 400 clamp(48px, 6.4vw, 120px)/.9 var(--sans);   /* Yanzi: exactly the About lines (400, ~92px at 1440) — the 144px version read too heavy */
+   letter-spacing: -.055em; text-transform: uppercase; }
+html[data-lang="zh"] .pj-title { letter-spacing: -.055em; }
+
+/* E6 (Yanzi): case-study paragraphs a little smaller and darker — easier to read, and a clearer
+   step down from the 18px section labels */
+.pj4-text p { font-size: 14px; color: #666; }
+.pj4-text strong { color: #000; }
+
+/* E6 (Yanzi): Context beside the forest image — text in the ¼ column (rule on top, like the
+   Overview), the image from the ¼ | ¾ line to the right edge */
+.pj4 #pj-gallery > .pj6-beside {
+  grid-column: 1 / -1; display: grid; align-items: start;
+  grid-template-columns: calc((100% - var(--m)) / 4) minmax(0, 1fr); column-gap: var(--m);
+}
+.pj6-beside > figure { margin: 0; grid-column: 2 !important; grid-row: 1; width: auto !important; }
+.pj6-beside > aside { grid-column: 1; grid-row: 1; }
+@media (max-width: 700px) { .pj4 #pj-gallery > .pj6-beside { grid-template-columns: 1fr; row-gap: 24px; } }
+@media (max-width: 700px) { .pj6-beside > figure, .pj6-beside > aside { grid-column: 1 !important; grid-row: auto; } }
