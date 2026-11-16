@@ -287,6 +287,7 @@ window.PROJECTS = [
     tags: [
       { en: "Packaging Design", zh: "包装设计" },
     ],
+    facts: { client: { en: "Personal", zh: "个人项目" }, thanks: { en: "Dan Hoy", zh: "Dan Hoy" } },   // Yanzi 2026-11-15
     noHoverVideo: true,   // Yanzi 2026-11-14: no board motion on the homepage card — the cover only
     cover: "media/stay-in-lign-cover-6.webp",    // Yanzi 2026-11-14: The Chewies taken out at the sink (from her original IMG_1774, 3200px)
     leadAll: true,   // Yanzi: every image in the ¾ column, edges aligned (the pair below as wide as the photo above)
